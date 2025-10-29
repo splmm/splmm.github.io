@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件目录列表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .file-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .file-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .file-link {
+            color: #2196F3;
+            text-decoration: none;
+        }
+        .file-link:hover {
+            text-decoration: underline;
+            color: #0b7dda;
+        }
+        .file-type {
+            margin-left: 8px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>文件目录列表</h1>
+    <p>以下是当前目录下的所有文件，链接前缀：<code>https://splmm.github.io/</code></p>
+    
+    <ul class="file-list" id="fileList">
+        <!-- 文件列表将通过JavaScript动态生成 -->
+    </ul>
+
+    <script>
+        // 在这里添加你的文件列表
+        // 格式：{ name: "文件名", type: "文件类型(可选)" }
+        const files = [
+            { name: "example1.html", type: "HTML文件" },
+            { name: "document.pdf", type: "PDF文档" },
+            { name: "image.jpg", type: "图片文件" },
+            { name: "data.csv", type: "CSV数据" },
+            // 继续添加更多文件...
+        ];
+
+        // 链接前缀
+        const baseUrl = "https://splmm.github.io/";
+
+        // 获取文件列表容器
+        const fileList = document.getElementById("fileList");
+
+        // 动态生成文件列表
+        files.forEach(file => {
+            const listItem = document.createElement("li");
+            listItem.className = "file-item";
+            
+            const link = document.createElement("a");
+            link.href = baseUrl + file.name;
+            link.className = "file-link";
+            link.textContent = file.name;
+            link.target = "_blank"; // 新窗口打开
+            
+            listItem.appendChild(link);
+            
+            // 如果有文件类型，添加类型说明
+            if (file.type) {
+                const typeSpan = document.createElement("span");
+                typeSpan.className = "file-type";
+                typeSpan.textContent = `(${file.type})`;
+                listItem.appendChild(typeSpan);
+            }
+            
+            fileList.appendChild(listItem);
+        });
+
+        // 如果没有文件，显示提示
+        if (files.length === 0) {
+            fileList.innerHTML = "<li>当前目录下没有文件</li>";
+        }
+    </script>
+</body>
+</html>
