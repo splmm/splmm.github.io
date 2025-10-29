@@ -12,109 +12,299 @@
             padding: 20px;
             line-height: 1.6;
         }
+
         h1 {
             color: #333;
             border-bottom: 2px solid #4CAF50;
             padding-bottom: 10px;
         }
+
         .file-list {
             list-style-type: none;
             padding: 0;
         }
+
         .file-item {
             padding: 8px 0;
             border-bottom: 1px solid #eee;
         }
+
+        .file-item-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
         .file-link {
             color: #2196F3;
             text-decoration: none;
         }
+
         .file-link:hover {
             text-decoration: underline;
             color: #0b7dda;
         }
+
         .file-type {
             margin-left: 8px;
             color: #666;
             font-size: 0.9em;
         }
+        .collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible::before {
+            //content: "▼ ";
+            transition: transform 0.2s;
+        }
+
+        .collapsible.closed::before {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .collapsible-content.closed {
+            max-height: 0;
+        }
     </style>
 </head>
 <body>
-    <h1>笔记列表</h1>
-    <p>好记性不如烂笔头</p>
-    
-    <ul class="file-list" id="fileList">
-        <!-- 文件列表将通过JavaScript动态生成 -->
-    </ul>
+<h1>笔记列表</h1>
+<p>好记性不如烂笔头</p>
+
+<ul class="file-list" id="fileList">
+    <!-- 文件列表将通过JavaScript动态生成 -->
+</ul>
+
+<!--<ul class="file-list" id="fileList2">-->
+<!--    <li class="file-item"><a href="https://splmm.github.io/test.png" class="file-link" target="_blank">test.png</a><span class="file-type">(图片文件)</span></li>-->
+
+<!--    <li class="file-item collapsible" onclick="toggleCollapse('fileList3')"><a class="file-link">子目录内容</a>-->
+<!--        <ul class="file-list collapsible-content" id="fileList3">-->
+<!--            <li class="file-item-item"><a href="https://splmm.github.io/test.png" class="file-link" target="_blank">test.png</a><span class="file-type">(图片文件)</span></li>-->
+<!--            <li class="file-item-item"><a href="https://splmm.github.io/test.png" class="file-link" target="_blank">test.png</a><span class="file-type">(图片文件)</span></li>-->
+<!--        </ul>-->
+
+<!--    </li>-->
+
+<!--    <li class="file-item"><a href="https://splmm.github.io/test.png" class="file-link" target="_blank">test.png</a><span class="file-type">(图片文件)</span></li>-->
+<!--</ul>-->
 
 <script>
-    const baseUrl = "https://splmm.github.io/";
-    const repoOwner = "splmm";
-    const repoName = "splmm.github.io";
-    const branch = "main"; // 或你的默认分支名
+    // GitHub仓库信息
+    const GITHUB_OWNER = 'splmm';
+    const GITHUB_REPO = 'splmm.github.io';
+    const GITHUB_BRANCH = 'main'; // 根据实际情况调整分支名
 
-    async function fetchFiles() {
-        try {
-            const response = await fetch(
-                `https://api.github.com/repos/${repoOwner}/${repoName}/contents?ref=${branch}`
-            );
-            const files = await response.json();
+    // 文件类型映射
+    const fileTypeMap = {
+        '.html': 'HTML文件',
+        '.pdf': 'PDF文档',
+        '.jpg': '图片文件',
+        '.png': '图片文件',
+        '.gif': '图片文件',
+        '.csv': 'CSV数据',
+        '.txt': '文本文件',
+        '.md': 'Markdown文件'
+    };
 
-            const fileList = document.getElementById("fileList");
-            fileList.innerHTML = ""; // 清空现有内容
+    // 获取文件类型描述
+    function getFileType(name) {
+        const ext = name.substring(name.lastIndexOf('.')).toLowerCase();
+        return fileTypeMap[ext] || '文件';
+    }
 
-            files.forEach(file => {
-                if (file.type === "file" && file.name !== "index.html") {
-                    const listItem = document.createElement("li");
-                    listItem.className = "file-item";
+    // 渲染文件列表
+    function renderFile(file,parentHtml) {
 
-                    const link = document.createElement("a");
-                    link.href = file.download_url;
-                    link.className = "file-link";
-                    link.textContent = file.name;
-                    link.target = "_blank";
+        const listItem = document.createElement("li");
+        listItem.className = "file-item";
 
-                    listItem.appendChild(link);
+        const link = document.createElement("a");
+        link.href = file.download_url;
+        link.className = "file-link";
+        link.textContent = file.name;
+        link.target = "_blank";
 
-                    // 添加文件类型
-                    const typeSpan = document.createElement("span");
-                    typeSpan.className = "file-type";
-                    typeSpan.textContent = `(${getFileExtension(file.name)})`;
-                    listItem.appendChild(typeSpan);
+        listItem.appendChild(link);
 
-                    fileList.appendChild(listItem);
+        // 添加文件类型说明
+        const typeSpan = document.createElement("span");
+        typeSpan.className = "file-type";
+        typeSpan.textContent = `(${getFileType(file.name)})`;
+        listItem.appendChild(typeSpan);
+
+        parentHtml.appendChild(listItem);
+    }
+
+    function renderDir(file,parentHtml) {
+
+        const listItem = document.createElement("li");
+        listItem.className = "file-item collapsible";
+
+        const link = document.createElement("a");
+        link.href = '';
+        link.className = "file-link";
+        link.textContent = file.name;
+        link.target = "_blank";
+        listItem.appendChild(link);
+
+        const listItemUl = document.createElement("ul");
+        listItemUl.className = "file-list collapsible-content";
+        listItemUl.id = file.id;
+        listItemUl.addEventListener('click', function() {
+            toggleCollapse(this.id);
+        });
+        console.log(file.child)
+
+        let child = file.child;
+        console.log(child)
+        child.forEach(item => {
+            console.log(item.name)
+        })
+
+        if(child.length>0){
+            console.log("111111111111111111111")
+        }
+        if (Array.isArray(file.child)) {
+            //child
+            child.forEach(item => {
+                console.log(item)
+                if (item.type === 'file') {
+                    renderFile(item,listItemUl)
+                } else if (item.type === 'dir') {
+                    renderDir(item,listItemUl)
                 }
-            });
+            })
+        }
+        listItem.appendChild(listItemUl);
+        parentHtml.appendChild(listItem);
+    }
 
-            if (files.length === 0 || files.filter(f => f.name !== "index.html").length === 0) {
-                fileList.innerHTML = "<li>当前目录下没有文件</li>";
+    // 渲染文件列表
+    function renderFileList(files) {
+        const fileList = document.getElementById("fileList");
+        //fileList.innerHTML = ""; // 清空现有内容
+
+        if (files.length === 0) {
+            fileList.innerHTML = "<li>当前目录下没有文件</li>";
+            return;
+        }
+
+        files.forEach(file => {
+            if (file.name === 'index.html') return; // 跳过index.html本身
+
+            if (file.type === 'file') {
+                renderFile(file,fileList)
+            } else if (file.type === 'dir') {
+                renderDir(file,fileList)
+            }
+        });
+    }
+
+    // 获取GitHub仓库文件列表
+    async function fetchFiles2(dir = '') {
+        try {
+            const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${dir}?ref=${GITHUB_BRANCH}`
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                return null;
+            }
+            const data = await response.json();
+
+            if (Array.isArray(data)) {
+
+                //创建files
+                const files = [];
+
+                //遍历data
+                data.forEach(item => {
+
+                    let name = item.name;
+                    let download_url = "https://splmm.github.io/" + dir + "/" + item.name
+                    let fileType = item.type;
+                    let id = item.sha;
+
+                    const file =  {
+                        name: name,
+                        download_url: download_url,
+                        type: fileType,
+                        id: id,
+                        child: item.type==='dir' ? fetchFiles2(item.name): null
+                    };
+                    files.push(file);
+                })
+                return files;
             }
         } catch (error) {
-            console.error("获取文件列表失败:", error);
-            document.getElementById("fileList").innerHTML = "<li>无法获取文件列表</li>";
+            console.error('获取文件列表失败:', error);
+            document.getElementById("fileList").innerHTML = "<li>加载文件列表失败</li>";
         }
     }
 
-    function getFileExtension(filename) {
-        const ext = filename.split('.').pop().toUpperCase();
-        const extMap = {
-            'HTML': 'HTML文件',
-            'PDF': 'PDF文档',
-            'JPG': '图片文件',
-            'JPEG': '图片文件',
-            'PNG': '图片文件',
-            'GIF': '图片文件',
-            'CSV': 'CSV数据',
-            'TXT': '文本文件',
-            'MD': 'Markdown文件'
-        };
-        return extMap[ext] || `${ext}文件`;
+    // 获取GitHub仓库文件列表
+    async function fetchFiles() {
+        try {
+            const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents?ref=${GITHUB_BRANCH}`;
+
+            const response = await fetch(apiUrl);
+
+            if (!response.ok) {
+                throw new Error('获取文件列表失败');
+            }
+
+            const data = await response.json();
+
+            if (Array.isArray(data)) {
+
+                //创建files
+                const files = [];
+
+                //遍历data
+                data.forEach(item => {
+
+                    let name = item.name;
+                    let download_url = "https://splmm.github.io/" + item.name
+                    let fileType = item.type;
+                    let id = item.sha;
+
+                    const file = {
+                        name: name,
+                        download_url: download_url,
+                        type: fileType,
+                        id: id,
+                        child: item.type==='dir' ? fetchFiles2(item.name): null
+                    };
+                    files.push(file);
+                })
+                renderFileList(files);
+
+            }
+        } catch (error) {
+            console.error('获取文件列表失败:', error);
+            document.getElementById("fileList").innerHTML = "<li>加载文件列表失败</li>";
+        }
+    }
+    function toggleCollapse(elementId) {
+        const element = document.getElementById(elementId);
+        const parent = element.parentElement.querySelector('.collapsible');
+
+        element.classList.toggle('closed');
+        if (parent) {
+            parent.classList.toggle('closed');
+        }
     }
 
-    // 页面加载时获取文件列表
+    // 页面加载完成后获取文件列表
     fetchFiles();
+
 </script>
+
 
 </body>
 </html>
