@@ -1,0 +1,411 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>vite项目初始化基建 | 个人博客</title><meta name="author" content="admin"><meta name="copyright" content="admin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="配置eslint什么是eslint? ESLint 是一个 JavaScript 和 TypeScript 的静态代码分析工具，它用于识别代码中的问题并提供一致性和规范性。简单来说，它的作用是：  检测错误和潜在的问题： ESLint 可以帮助你找到代码中的错误、潜在的 bug 以及不规范的写法，从而提高代码的质量和稳定性。 强制执行代码风格规范： 它可以根据预定义的规则或自定义的规则来强制执行一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vite项目初始化基建">
+<meta property="og:url" content="https://blog.p0.ee/2022/01/03/vue/vite%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96%E5%9F%BA%E5%BB%BA/index.html">
+<meta property="og:site_name" content="个人博客">
+<meta property="og:description" content="配置eslint什么是eslint? ESLint 是一个 JavaScript 和 TypeScript 的静态代码分析工具，它用于识别代码中的问题并提供一致性和规范性。简单来说，它的作用是：  检测错误和潜在的问题： ESLint 可以帮助你找到代码中的错误、潜在的 bug 以及不规范的写法，从而提高代码的质量和稳定性。 强制执行代码风格规范： 它可以根据预定义的规则或自定义的规则来强制执行一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.p0.ee/img/Logo.png">
+<meta property="article:published_time" content="2022-01-03T01:51:00.000Z">
+<meta property="article:modified_time" content="2025-10-30T02:51:52.317Z">
+<meta property="article:author" content="admin">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.p0.ee/img/Logo.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "vite项目初始化基建",
+  "url": "https://blog.p0.ee/2022/01/03/vue/vite%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96%E5%9F%BA%E5%BB%BA/",
+  "image": "https://blog.p0.ee/img/Logo.png",
+  "datePublished": "2022-01-03T01:51:00.000Z",
+  "dateModified": "2025-10-30T02:51:52.317Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "admin",
+      "url": "https://blog.p0.ee/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/g.jpeg"><link rel="canonical" href="https://blog.p0.ee/2022/01/03/vue/vite%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96%E5%9F%BA%E5%BB%BA/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'vite项目初始化基建',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/mycss.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/background.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/Logo.png" alt="Logo"><span class="site-name">个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">vite项目初始化基建</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">vite项目初始化基建</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2022-01-03T01:51:00.000Z" title="发表于 2022-01-03 01:51:00">2022-01-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="配置eslint"><a href="#配置eslint" class="headerlink" title="配置eslint"></a>配置eslint</h2><h3 id="什么是eslint"><a href="#什么是eslint" class="headerlink" title="什么是eslint?"></a>什么是eslint?</h3><blockquote>
+<p>ESLint 是一个 JavaScript 和 TypeScript 的静态代码分析工具，它用于识别代码中的问题并提供一致性和规范性。简单来说，它的作用是：</p>
+<ol>
+<li><strong>检测错误和潜在的问题：</strong> ESLint 可以帮助你找到代码中的错误、潜在的 bug 以及不规范的写法，从而提高代码的质量和稳定性。</li>
+<li><strong>强制执行代码风格规范：</strong> 它可以根据预定义的规则或自定义的规则来强制执行一致的代码风格，以确保团队成员之间的代码风格一致，提高代码的可读性和可维护性。</li>
+<li><strong>提供自定义规则和插件支持：</strong> ESLint 允许你根据项目的特定需求定义自定义规则，并且支持各种插件，可以满足不同项目的特定需求。</li>
+</ol>
+<p>总的来说，ESLint 可以帮助开发人员编写更加干净、可靠和符合规范的代码。</p>
+</blockquote>
+<h3 id="安装命令"><a href="#安装命令" class="headerlink" title="安装命令"></a>安装命令</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 方案<span class="number">1</span> </span><br><span class="line">pnpm i -D eslint</span><br></pre></td></tr></table></figure>
+
+<h3 id="规则方案"><a href="#规则方案" class="headerlink" title="规则方案"></a>规则方案</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 使用集成方案，内置好了所需规则</span><br><span class="line">pnpm i -D @antfu/eslint-config </span><br><span class="line"></span><br><span class="line"># eslint默认方案，通过命令初始化eslint规则</span><br><span class="line">npx eslint --init</span><br></pre></td></tr></table></figure>
+
+<h4 id="eslint集成方案"><a href="#eslint集成方案" class="headerlink" title="eslint集成方案"></a>eslint集成方案</h4><blockquote>
+<p>先安装方案一的@antfu&#x2F;eslint-config </p>
+<p>在根目录新建 eslint.config.js即可</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> antfu <span class="keyword">from</span> <span class="string">&#x27;@antfu/eslint-config&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">antfu</span>(&#123;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="eslint初始化默认方案（可选）"><a href="#eslint初始化默认方案（可选）" class="headerlink" title="eslint初始化默认方案（可选）"></a>eslint初始化默认方案（可选）</h4><h5 id="第一步-选择检测类型"><a href="#第一步-选择检测类型" class="headerlink" title="第一步 选择检测类型"></a>第一步 选择检测类型</h5><ul>
+<li><p>仅检查语法</p>
+</li>
+<li><p>检查语法并查找问题</p>
+</li>
+<li><p>若要检查语法、寻找问题并胁迫执行程式码样式</p>
+<p><strong>选择第二个，To check syntax and find problems</strong></p>
+</li>
+</ul>
+<p><img src="https://tuchuang.junsen.online/i/2024/02/20/cjxore-2.png" alt="image-20240220075859922"></p>
+<h5 id="第二步-选择项目是什么类型的模块"><a href="#第二步-选择项目是什么类型的模块" class="headerlink" title="第二步 选择项目是什么类型的模块"></a>第二步 选择项目是什么类型的模块</h5><p><strong>有以下三个选项，根据项目所需选择，这里使用的是js模块选择第一个即可</strong></p>
+<ul>
+<li>JavaScript模块（导入&#x2F;导出）</li>
+<li>CommonJS（require&#x2F;exports）</li>
+<li>没有这些</li>
+</ul>
+<p><img src="https://tuchuang.junsen.online/i/2024/02/20/dcgx0e-2.png" alt="image-20240220080700457"></p>
+<h5 id="第三步-选择所使用的框架-根据你的项目选择即可"><a href="#第三步-选择所使用的框架-根据你的项目选择即可" class="headerlink" title="第三步 选择所使用的框架 根据你的项目选择即可"></a>第三步 选择所使用的框架 根据你的项目选择即可</h5><p><img src="https://tuchuang.junsen.online/i/2024/02/20/ddcik6-2.png" alt="image-20240220080847042"></p>
+<h5 id="第四步-是否使用了ts-根据自己项目的选择"><a href="#第四步-是否使用了ts-根据自己项目的选择" class="headerlink" title="第四步 是否使用了ts,根据自己项目的选择"></a>第四步 是否使用了ts,根据自己项目的选择</h5><p><img src="https://tuchuang.junsen.online/i/2024/02/20/ddyrnf-2.png" alt="image-20240220080951098"></p>
+<h5 id="第五步-选择运行环境，一般选浏览器，也就是第一个browser"><a href="#第五步-选择运行环境，一般选浏览器，也就是第一个browser" class="headerlink" title="第五步 选择运行环境，一般选浏览器，也就是第一个browser"></a>第五步 选择运行环境，一般选浏览器，也就是第一个browser</h5><p><img src="https://tuchuang.junsen.online/i/2024/02/20/defi6y-2.png" alt="image-20240220081029606"></p>
+<h5 id="第六步-选择配置文件的类型，一般第一个即可"><a href="#第六步-选择配置文件的类型，一般第一个即可" class="headerlink" title="第六步 选择配置文件的类型，一般第一个即可"></a>第六步 选择配置文件的类型，一般第一个即可</h5><p><img src="https://tuchuang.junsen.online/i/2024/02/20/dezy1j-2.png" alt="image-20240220081125789"></p>
+<h5 id="第七步-是否需要以下依赖，直接yes就行了，如果不用选no"><a href="#第七步-是否需要以下依赖，直接yes就行了，如果不用选no" class="headerlink" title="第七步 是否需要以下依赖，直接yes就行了，如果不用选no"></a>第七步 是否需要以下依赖，直接yes就行了，如果不用选no</h5><p><img src="https://tuchuang.junsen.online/i/2024/02/20/dfqdaq-2.png" alt="image-20240220081248294"></p>
+<h5 id="第八步-选择安装依赖的方式，根据你项目所需的包管理选择"><a href="#第八步-选择安装依赖的方式，根据你项目所需的包管理选择" class="headerlink" title="第八步 选择安装依赖的方式，根据你项目所需的包管理选择"></a>第八步 选择安装依赖的方式，根据你项目所需的包管理选择</h5><p><img src="https://tuchuang.junsen.online/i/2024/02/20/dgn0by-2.png" alt="image-20240220081400408"></p>
+<p><strong>执行完毕后的样子，根目录会多出 .eslintrc.cjs 的文件，在里面配置规则即可</strong></p>
+<p><img src="https://tuchuang.junsen.online/i/2024/02/20/dhjk9n-2.png" alt="image-20240220081552312"></p>
+<h3 id="vscode-settings-json"><a href="#vscode-settings-json" class="headerlink" title=".vscode&#x2F;settings.json"></a>.vscode&#x2F;settings.json</h3><blockquote>
+<p>这个配置文件是用来配置编辑器（如 VSCode）的，主要针对 ESLint 和 Prettier 的设置。具体含义如下：</p>
+<ul>
+<li><code>&quot;eslint.experimental.useFlatConfig&quot;: true</code>: 启用 ESLint 的扁平配置支持。</li>
+<li><code>&quot;prettier.enable&quot;: false</code>: 禁用默认的格式化程序，改用 ESLint 来格式化代码。</li>
+<li><code>&quot;editor.formatOnSave&quot;: false</code>: 关闭在保存时自动格式化代码的功能。</li>
+<li><code>&quot;editor.codeActionsOnSave&quot;</code>: 在保存时执行的代码操作，其中 <code>&quot;source.fixAll.eslint&quot;: &quot;explicit&quot;</code> 表示显式地自动修复 ESLint 报告的所有问题，<code>&quot;source.organizeImports&quot;: &quot;never&quot;</code> 表示不进行导入组织操作。</li>
+<li><code>&quot;eslint.rules.customizations&quot;</code>: 定制 ESLint 规则，将一些样式规则的严重程度设置为 “off”，这样编辑器会静默地忽略这些规则，但仍会自动修复它们。</li>
+<li><code>&quot;eslint.validate&quot;</code>: 启用 ESLint 对各种语言的验证，包括 JavaScript、TypeScript、Vue、HTML、Markdown 等。</li>
+</ul>
+</blockquote>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="comment">// 启用 ESLint 的扁平配置支持</span></span><br><span class="line">  <span class="attr">&quot;eslint.experimental.useFlatConfig&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 禁用默认的格式化程序，改用 ESLint</span></span><br><span class="line">  <span class="attr">&quot;prettier.enable&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;editor.formatOnSave&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 自动修复</span></span><br><span class="line">  <span class="attr">&quot;editor.codeActionsOnSave&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;source.fixAll.eslint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;explicit&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;source.organizeImports&quot;</span><span class="punctuation">:</span> <span class="string">&quot;never&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 在编辑器中静默规避样式规则，但仍然自动修复它们</span></span><br><span class="line">  <span class="attr">&quot;eslint.rules.customizations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;style/*&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;format/*&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*-indent&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*-spacing&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*-spaces&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*-order&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*-dangle&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*-newline&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*quotes&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;rule&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*semi&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;severity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span> <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 对所有支持的语言启用 ESLint</span></span><br><span class="line">  <span class="attr">&quot;eslint.validate&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="string">&quot;javascript&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;javascriptreact&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;typescript&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;typescriptreact&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;vue&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;html&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;markdown&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;json&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;jsonc&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;yaml&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;toml&quot;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="配置husky"><a href="#配置husky" class="headerlink" title="配置husky"></a>配置husky</h2><h3 id="安装husky与lint-staged"><a href="#安装husky与lint-staged" class="headerlink" title="安装husky与lint-staged"></a>安装husky与lint-staged</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pnpm install -D husky lint-staged</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化husky"><a href="#初始化husky" class="headerlink" title="初始化husky"></a>初始化husky</h3><blockquote>
+<p>在package.json scripts里面新增下面语句初始化husky,也可以执行执行 npx husky-init，执行完毕后会在项目根目录自动新增.husky文件夹</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;prepare&quot;: &quot;husky install&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="指定husky给lint-staged执行"><a href="#指定husky给lint-staged执行" class="headerlink" title="指定husky给lint-staged执行"></a>指定husky给lint-staged执行</h3><blockquote>
+<p>使用 lint-staged 的主要原因是它可以让 lint 工具只针对暂存区中的文件运行，而不是整个项目，这样可以提高 lint 的效率，只检查即将提交的代码，而不是整个项目的所有代码。这在大型项目中尤其有用，因为 lint-staged 可以帮助减少 lint 运行的时间，提高开发效率。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx husky add .husky/pre-commit &quot;npx lint-staged&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置commitlint"><a href="#配置commitlint" class="headerlink" title="配置commitlint"></a>配置commitlint</h2><blockquote>
+<p>由于实际开发中会多人参与，对于我们的commit信息，也是有统一规范的，不能随便写,要让每个人都按照统一的标准来执行，我们可以利用<strong>commitlint</strong>来实现。根据<em><strong>Angular</strong></em>的提交规范会有以下几种</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th><strong>类型</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>build</td>
+<td>编译相关的修改，例如发布版本、对项目构建或者依赖的改动</td>
+</tr>
+<tr>
+<td>chore</td>
+<td>其他修改, 比如改变构建流程、或者增加依赖库、工具等</td>
+</tr>
+<tr>
+<td>ci</td>
+<td>持续集成修改</td>
+</tr>
+<tr>
+<td>docs</td>
+<td>文档修改</td>
+</tr>
+<tr>
+<td>feat</td>
+<td>新特性、新功能</td>
+</tr>
+<tr>
+<td>fix</td>
+<td>修改bug</td>
+</tr>
+<tr>
+<td>perf</td>
+<td>优化相关，比如提升性能、体验</td>
+</tr>
+<tr>
+<td>refactor</td>
+<td>代码重构</td>
+</tr>
+<tr>
+<td>revert</td>
+<td>回滚到上一个版本</td>
+</tr>
+<tr>
+<td>style</td>
+<td>代码格式修改, 注意不是 css 修改</td>
+</tr>
+<tr>
+<td>test</td>
+<td>测试用例修改</td>
+</tr>
+</tbody></table>
+<h3 id="安装-commitlint"><a href="#安装-commitlint" class="headerlink" title="安装  commitlint"></a>安装  commitlint</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pnpm add @commitlint/config-conventional @commitlint/cli -D</span><br></pre></td></tr></table></figure>
+
+<h3 id="根目录-新建-commitlint-config-cjs"><a href="#根目录-新建-commitlint-config-cjs" class="headerlink" title="根目录 新建 commitlint.config.cjs"></a>根目录 新建 commitlint.config.cjs</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">extends</span>: [<span class="string">&#x27;@commitlint/config-conventional&#x27;</span>],</span><br><span class="line">  <span class="comment">// 校验规则</span></span><br><span class="line">  <span class="attr">rules</span>: &#123;</span><br><span class="line">    <span class="string">&#x27;type-enum&#x27;</span>: [</span><br><span class="line">      <span class="number">2</span>,</span><br><span class="line">      <span class="string">&#x27;always&#x27;</span>,</span><br><span class="line">      [</span><br><span class="line">        <span class="string">&#x27;feat&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;fix&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;docs&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;style&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;refactor&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;perf&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;test&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;chore&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;revert&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;build&#x27;</span>,</span><br><span class="line">      ],</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&#x27;type-case&#x27;</span>: [<span class="number">0</span>],</span><br><span class="line">    <span class="string">&#x27;type-empty&#x27;</span>: [<span class="number">0</span>],</span><br><span class="line">    <span class="string">&#x27;scope-empty&#x27;</span>: [<span class="number">0</span>],</span><br><span class="line">    <span class="string">&#x27;scope-case&#x27;</span>: [<span class="number">0</span>],</span><br><span class="line">    <span class="string">&#x27;subject-full-stop&#x27;</span>: [<span class="number">0</span>, <span class="string">&#x27;never&#x27;</span>],</span><br><span class="line">    <span class="string">&#x27;subject-case&#x27;</span>: [<span class="number">0</span>, <span class="string">&#x27;never&#x27;</span>],</span><br><span class="line">    <span class="string">&#x27;header-max-length&#x27;</span>: [<span class="number">0</span>, <span class="string">&#x27;always&#x27;</span>, <span class="number">72</span>],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="在package-json中配置scripts命令"><a href="#在package-json中配置scripts命令" class="headerlink" title="在package.json中配置scripts命令"></a>在<code>package.json</code>中配置scripts命令</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 在scrips中添加下面的代码</span><br><span class="line">&#123;</span><br><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;commitlint&quot;: &quot;commitlint --config commitlint.config.cjs -e -V&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="给-husky新增commit-msg钩子指令"><a href="#给-husky新增commit-msg钩子指令" class="headerlink" title="给 husky新增commit-msg钩子指令"></a>给 husky新增commit-msg钩子指令</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">npx husky add .husky/commit-msg </span><br><span class="line"></span><br><span class="line"># 在生成的commit-msg文件中添加下面的命令(路径在.husky/)</span><br><span class="line"></span><br><span class="line">#!/usr/bin/env sh</span><br><span class="line">. &quot;$(dirname -- &quot;$0&quot;)/_/husky.sh&quot;</span><br><span class="line">pnpm commitlint</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>当我们git commit -m 时需要指定上面提到的前缀才能正常commit ，feat后面的冒号要英文的 :</p>
+<p>git commit -m “feat: 新增commitlint规范Commit记录”</p>
+</blockquote>
+<h2 id="配置环境变量配置"><a href="#配置环境变量配置" class="headerlink" title="配置环境变量配置"></a>配置环境变量配置</h2><blockquote>
+<ol>
+<li><strong>安全性：</strong> 将敏感信息（如 API 密钥、数据库密码等）存储在环境变量中比直接硬编码在代码中更安全。这样做可以避免将这些敏感信息泄露到版本控制系统中，降低了信息泄露的风险。</li>
+<li><strong>灵活性：</strong> 使用环境变量可以使你的应用程序在不同的环境中（例如开发、测试、生产）运行时具有不同的配置。你可以针对不同的环境设置不同的环境变量，而不需要修改代码。</li>
+<li><strong>可维护性：</strong> 将配置信息放在环境变量中可以使代码更易于维护。如果需要更改配置，只需更改环境变量的值，而不需要修改代码并重新部署应用程序。</li>
+<li><strong>可移植性：</strong> 使用环境变量可以使你的应用程序更具可移植性。你可以在不同的环境中轻松地部署应用程序，而无需担心配置信息的硬编码问题。</li>
+</ol>
+<p>综上所述，配置环境变量是一种良好的实践，可以提高应用程序的安全性、灵活性、可维护性和可移植性。</p>
+</blockquote>
+<h3 id="根目录新建开发、测试、生产环境配置文件"><a href="#根目录新建开发、测试、生产环境配置文件" class="headerlink" title="根目录新建开发、测试、生产环境配置文件"></a>根目录新建开发、测试、生产环境配置文件</h3><blockquote>
+<p>下面命令执行不了可以直接根目录新建文件.env.development这种方式</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">touch .env.development</span><br><span class="line">touch .env.production</span><br><span class="line">touch .env.test </span><br></pre></td></tr></table></figure>
+
+<h3 id="文件内容"><a href="#文件内容" class="headerlink" title="文件内容"></a>文件内容</h3><h4 id="开发环境模板"><a href="#开发环境模板" class="headerlink" title="开发环境模板"></a>开发环境模板</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NODE_ENV = &#x27;development&#x27;</span><br><span class="line"># 项目名称</span><br><span class="line">VITE_APP_TITLE = &#x27;Vue 3 + Vite + TSX&#x27;</span><br><span class="line"># 请求根路径</span><br><span class="line">VITE_APP_BASE_API = &#x27;/dev-api&#x27;</span><br><span class="line"># 请求地址</span><br><span class="line">VITE_APP_BASE_URL = &#x27;http://localhost:3000&#x27;</span><br></pre></td></tr></table></figure>
+
+<h4 id="生产环境模板"><a href="#生产环境模板" class="headerlink" title="生产环境模板"></a>生产环境模板</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NODE_ENV = &#x27;production&#x27;</span><br><span class="line"># 项目名称</span><br><span class="line">VITE_APP_TITLE = &#x27;Vue 3 + Vite + TSX&#x27;</span><br><span class="line"># 请求根路径</span><br><span class="line">VITE_APP_BASE_API = &#x27;/prod-api&#x27;</span><br><span class="line"># 请求地址</span><br><span class="line">VITE_APP_BASE_URL = &#x27;http://junsen.online:3000&#x27;</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试环境模板"><a href="#测试环境模板" class="headerlink" title="测试环境模板"></a>测试环境模板</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 变量必须以 VITE_ 为前缀才能暴露给外部读取</span><br><span class="line">NODE_ENV = &#x27;test&#x27;</span><br><span class="line"># 项目名称</span><br><span class="line">VITE_APP_TITLE = &#x27;Vue 3 + Vite + TSX&#x27;</span><br><span class="line"># 请求根路径</span><br><span class="line">VITE_APP_BASE_API = &#x27;/test-api&#x27;</span><br><span class="line"># 请求地址</span><br><span class="line">VITE_APP_BASE_URL = &#x27;http://junsen.online:7001&#x27;</span><br></pre></td></tr></table></figure>
+
+<h4 id="启动时设置环境变量"><a href="#启动时设置环境变量" class="headerlink" title="启动时设置环境变量"></a>启动时设置环境变量</h4><blockquote>
+<p>package.json scripts里面新增以下两条命令</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot;build:test&quot;: &quot;vue-tsc &amp;&amp; vite build --mode test&quot;,</span><br><span class="line">&quot;build:pro&quot;: &quot;vue-tsc &amp;&amp; vite build --mode production&quot;,</span><br></pre></td></tr></table></figure>
+
+<h4 id="给import-meta-env-添加变量提示"><a href="#给import-meta-env-添加变量提示" class="headerlink" title="给import.meta.env 添加变量提示"></a>给import.meta.env 添加变量提示</h4><blockquote>
+<p>项目src目录下新增env.d.ts</p>
+</blockquote>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// &lt;reference types=&quot;vite/client&quot; /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">ImportMetaEnv</span> &#123;</span><br><span class="line">  <span class="keyword">readonly</span> <span class="attr">VITE_APP_TITLE</span>: <span class="built_in">string</span></span><br><span class="line">  <span class="comment">// 更多环境变量...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">ImportMeta</span> &#123;</span><br><span class="line">  <span class="keyword">readonly</span> <span class="attr">env</span>: <span class="title class_">ImportMetaEnv</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tuchuang.junsen.online/i/2024/02/21/24ycux-2.png" alt="image-20240221012925698"></p>
+<h2 id="新增路径别名"><a href="#新增路径别名" class="headerlink" title="新增路径别名"></a>新增路径别名</h2><h3 id="在vite-config-ts中新增以下配置"><a href="#在vite-config-ts中新增以下配置" class="headerlink" title="在vite.config.ts中新增以下配置"></a>在vite.config.ts中新增以下配置</h3><blockquote>
+<p>引入path冒红需要安装node头文件因为ts识别不出，执行pnpm add @types&#x2F;node</p>
+</blockquote>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">resolve</span>: &#123;</span><br><span class="line">    <span class="attr">alias</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;@&#x27;</span>: path.<span class="title function_">resolve</span>(<span class="string">&#x27;./src&#x27;</span>),</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tuchuang.junsen.online/i/2024/02/21/2eo2iz-2.png" alt="image-20240221014556916"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
+<p>为什么不适用 prettier格式化？</p>
+<ul>
+<li>引用 antfu 的原话：如果你需要使用 ESLint，它也可以像 Prettier 一样格式化代码 - 而且更加可配置、Prettier + ESLint 仍然需要大量的配置 - 它并没有让你的生活变得更简单</li>
+</ul>
+<p>为什么要如此配置？</p>
+<ul>
+<li>可以规范化项目。从代码格式到校验、以及提交规范，开发环境区分，可以解决大部分因为规范引起代码混乱，不便于code review，</li>
+<li>加上在ts的加持下，提供了静态类型检查的功能，可以在编译时捕获类型错误，避免在运行时出现类型相关的错误。这可以提高代码的可靠性和可维护性以及强大的代码提示和自动完成功能，可以帮助开发人员更快地编写代码、发现 API 和库的用法，并减少错误。</li>
+</ul>
+<p>还会有后续文章吗？</p>
+<ul>
+<li>会有的，后续的规划是复习node、webpack、vite等内容，从构建工具底层原理入手。</li>
+</ul>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.p0.ee">admin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.p0.ee/2022/01/03/vue/vite%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96%E5%9F%BA%E5%BB%BA/">https://blog.p0.ee/2022/01/03/vue/vite%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96%E5%9F%BA%E5%BB%BA/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.p0.ee" target="_blank"></a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a></div><div class="post-share"><div class="social-share" data-image="/img/Logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2021/07/23/node/05%EF%BC%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/" title="接口文档"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">接口文档</div></div><div class="info-2"><div class="info-item-1">05：接口文档一、准备商品数据接口路由 在项目中创建新文件夹，准备存放接口文件：myapp—-&gt;api文件夹  创建商品接口的路由文件：api----&gt;goods.js  在app.js中注册接口：    12var apiGoods = require(&quot;./api/goods.js&quot;);app.use(&quot;/api/goods&quot;,apiGoods);  3.  测试接口：`localhost:3000/api/goods`   二、实现获取商品数据接口 引入数据库相关模块  接收到路由请求后，读取数据库数据，处理之后返回  数据格式规范：  没有数据  &#123; &quot;code&quot;: 400, &quot;title&quot;: &quot;请求失败&quot;, &quot;msg&quot;: &quot;NOT DATA&quot; &#125;   有数据  &#123; &quot;code&quot;: 200, &quot;title&quot;: &quot;请求成功&quot;,...</div></div></div></a><a class="pagination-related" href="/2022/01/04/vue/vue3%E7%AE%80%E4%BB%8B/" title="vue3简介"><img class="cover" src="http://localhost:4000/images/1695089947298-161c1b47-eb86-42fb-b1f8-d6a4fcab8ee2.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">vue3简介</div></div><div class="info-2"><div class="info-item-1">1. Vue3简介 2020年9月18日，Vue.js发布版3.0版本，代号：One Piece（n 经历了：4800+次提交、40+个RFC、600+次PR、300+贡献者 官方发版地址：Release v3.0.0 One Piece · vuejs&#x2F;core  2. Vue3对比Vue21.1. 【性能的提升】 打包大小减少41%。  初次渲染快55%, 更新渲染快133%。  内存减少54%。   1.2.【 源码的升级】 使用Proxy代替defineProperty实现响应式。  重写虚拟DOM的实现和Tree-Shaking。   1.3. 【拥抱TypeScript】 Vue3可以更好的支持TypeScript。  1.4. 【新的特性】 Composition API（组合API）：  setup  ref与reactive  computed与watch ……    新的内置组件：  Fragment  Teleport  Suspense ……    其他改变：  新的生命周期钩子  data...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2021/07/10/javascript/01%EF%BC%9AJS%E5%9F%BA%E7%A1%80/" title="JS基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">JS基础</div></div><div class="info-2"><div class="info-item-1">01：JS基础一、JavaScript 介绍 网页的组成：结构html，样式css，行为js  html：超文本标记语言 css：层叠样式表 javascript：网页的脚本语言，用来描述网页的逻辑交互行为 是一种基于对象和事件驱动并具有相对安全性的客户端脚本语言。同时也是一种广泛用于客户端Web开发的脚本语言，常用来给HTML网页添加动态功能，比如响应用户的各种操作。     javascript的组成：ECMAScript，DOM，BOM  ECMAScript：语法，规范，标准，定义了javascript的语法规范,描述了语言的基本语法和数据类型。 用来约束代码用什么样的格式书写，写什么，如何执行   DOM（Document Object Model）：文档对象模型，document，表示网页。 提供了网页的相关操作，标准化组织是W3C。 有一套成熟的可以操作页面元素的 API，通过 DOM 可以操作页面中的元素。 如：增加元素，删除元素，改变元素位置等     BOM（Browser Object...</div></div></div></a><a class="pagination-related" href="/2021/07/10/javascript/02%EF%BC%9A%E5%88%86%E6%94%AF/" title="分支"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">分支</div></div><div class="info-2"><div class="info-item-1">02：分支一、程序结构 顺序结构：默认的程序执行顺序，从上到下依次执行 分支结构：根据程序执行过程中可能产生的不同信息，决定执行不同的功能 配合分支语句   循环结构：根据执行条件重复执行某个功能 配合循环语句    二、分支语句 单分支：if()&#123;&#125; 根据条件决定执行或不执行    123456789101112// if()&#123;&#125;//     if      语句名，关键字//     ()      执行条件//     &#123;&#125;      执行条件符合时（true），要执行的代码console.log(1);if( true )&#123;    console.log(&quot;hello&quot;);&#125;console.log(2);   双分支：if(){}else{} 根据条件决定执行A或执行B    12345678910111213141516// if()&#123;&#125;else&#123;&#125;    // if      语句名1，关键字    // ()     ...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/03%EF%BC%9A%E5%BE%AA%E7%8E%AF/" title="循环"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">循环</div></div><div class="info-2"><div class="info-item-1">03：循环一、循环结构介绍 循环结构存在的意义  计算1+2+3+……+1000的和 需要向计算机输入重复的命令 节省向计算机输入命令的时间，并没有提升性能   循环结构的三要素  创建（初始化）计数器 执行条件 计数器的改变   死循环：无法通过自身控制结束的循环  瞬间占用大量性能，造成计算机死机，程序崩溃 尽量避免产生死循环 但可以利用死循环解决无法确定重复执行次数的问题    二、循环语句 while 循环语句  1234567891011// while()&#123;&#125;    // while       语句名，关键字    // ()          执行条件    // &#123;&#125;          当执行条件为true时，要重复执行的语句// 打印10次hellovar i = 0;while(i &lt; 10)&#123;    console.log(&quot;hello&quot;);    i++;&#125;   do...while 循环语句  123456789101112//...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/04%EF%BC%9A%E5%87%BD%E6%95%B0/" title="函数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">函数</div></div><div class="info-2"><div class="info-item-1">04：函数一、函数的基本概念 函数的概念 函数，即功能。将实现了某个功能的代码，集中起来，通过函数语句进行封装，封装之后，可以选择直接执行或行为 的 代码段。 函数是一种数据类型：function 对象：数据的打包，函数：代码的打包     函数最大的意义：封装功能 函数的特点： 重复使用 选择使用 忽略细节    二、函数的使用 创建函数 声明式：使用function关键字创建函数 function 函数名(){} var 变量名   赋值式：配合变量，赋个函数值，将函数作为一个值或表达式使用 var 变量名 &#x3D; function(){} 将函数作为值使用      123456789// 固定语法：// function 函数名()&#123;&#125;    // function：声明关键字，用来声明函数    // 函数名    // ()：参数，函数的入口    // &#123;&#125;：函数体，内放置要封装的代码function fn()&#123;	console.log(&quot;hello js&quot;);&#125;   使用函数...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/05%EF%BC%9A%E5%AF%B9%E8%B1%A1/" title="对象"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">对象</div></div><div class="info-2"><div class="info-item-1">05：对象一、对象的概念和特点 对象：是一种复杂数据，是数据的打包形式 无序集合，object对象，花括号形式 以键值对的形式存在，键和值一一对应，使用冒号连接，键值对之间使用逗号隔开 键：key，要遵守变量的命名规则，一个对象中不允许出现重复的键 值：value，就是正常数据 使用场景：一般用来打包非同类但属于同一个个体的数据 一个班级中某一个学生的所有信息 姓名，性别，年龄，手机号，住址     有序集合，array对象，中括号形式  数据之间默认以索引的形式，进行标记，索引从0开始，到length-1 使用场景：一般用来打包同类数据  一个班级所有学生的姓名  姓名，姓名，姓名       特点： 提升了数据的查找速度 提升了数据的传输速度   本质：键值对 键和值成对出现，键和值使用冒号连接，键值对之间使用逗号隔开，使用花括号做包裹 &#123;name:&quot;admin&quot;,age:18,sex:&quot;男&quot;&#125;   意义 存储数据 编程（面向对象编程）    二、对象的创建 字面量：var obj = &#123;...</div></div></div></a><a class="pagination-related" href="/2021/07/12/javascript/06%EF%BC%9A%E6%95%B0%E7%BB%84/" title="数组"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-12</div><div class="info-item-2">数组</div></div><div class="info-2"><div class="info-item-1">06：数组一、数组的概念和特点 数组是对象的一种，数组内的数据会按照顺序进行排列，是一种有序集合 数据按照顺序被标记，序号，也叫索引，从0开始 arr[0]   数组拥有length属性，用来表示自身有多少个数据 arr.length   因为索引的规律为从0开始递增，通过length属性标记数据总数，所以可以通过循环语句遍历数组    123for(var i=0; i&lt;arr.length; i++)&#123;  console.log( arr[i] );&#125;  二、数组的创建 字面量：var arr1 = [数据1, 数据2, 数据3, ...]; 创建函数：var arr2 = new Array(数据1, 数据2, 数据3, ...); 区别：当有且只有一个数值型数据时，字面量创建就是作为一个数据，构造函数创建会作为数组的长度，每个位置为undefined  三、数组的操作 索引+长度操作  原生操作，底层操作，所有数组操作功能的基础 查：arr[索引] 改：arr[索引] = &quot;新值&quot; 增：默认只能在数组的最后增加...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">admin</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">一个前端程序员，爱折腾，爱技术分享</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEeslint"><span class="toc-number">1.</span> <span class="toc-text">配置eslint</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFeslint"><span class="toc-number">1.1.</span> <span class="toc-text">什么是eslint?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%91%BD%E4%BB%A4"><span class="toc-number">1.2.</span> <span class="toc-text">安装命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%84%E5%88%99%E6%96%B9%E6%A1%88"><span class="toc-number">1.3.</span> <span class="toc-text">规则方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#eslint%E9%9B%86%E6%88%90%E6%96%B9%E6%A1%88"><span class="toc-number">1.3.1.</span> <span class="toc-text">eslint集成方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#eslint%E5%88%9D%E5%A7%8B%E5%8C%96%E9%BB%98%E8%AE%A4%E6%96%B9%E6%A1%88%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">eslint初始化默认方案（可选）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E9%80%89%E6%8B%A9%E6%A3%80%E6%B5%8B%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">第一步 选择检测类型</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E9%80%89%E6%8B%A9%E9%A1%B9%E7%9B%AE%E6%98%AF%E4%BB%80%E4%B9%88%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%A8%A1%E5%9D%97"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">第二步 选择项目是什么类型的模块</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5-%E9%80%89%E6%8B%A9%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E6%A1%86%E6%9E%B6-%E6%A0%B9%E6%8D%AE%E4%BD%A0%E7%9A%84%E9%A1%B9%E7%9B%AE%E9%80%89%E6%8B%A9%E5%8D%B3%E5%8F%AF"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">第三步 选择所使用的框架 根据你的项目选择即可</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5-%E6%98%AF%E5%90%A6%E4%BD%BF%E7%94%A8%E4%BA%86ts-%E6%A0%B9%E6%8D%AE%E8%87%AA%E5%B7%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E9%80%89%E6%8B%A9"><span class="toc-number">1.3.2.4.</span> <span class="toc-text">第四步 是否使用了ts,根据自己项目的选择</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5-%E9%80%89%E6%8B%A9%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83%EF%BC%8C%E4%B8%80%E8%88%AC%E9%80%89%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%8C%E4%B9%9F%E5%B0%B1%E6%98%AF%E7%AC%AC%E4%B8%80%E4%B8%AAbrowser"><span class="toc-number">1.3.2.5.</span> <span class="toc-text">第五步 选择运行环境，一般选浏览器，也就是第一个browser</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5-%E9%80%89%E6%8B%A9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E7%B1%BB%E5%9E%8B%EF%BC%8C%E4%B8%80%E8%88%AC%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%B3%E5%8F%AF"><span class="toc-number">1.3.2.6.</span> <span class="toc-text">第六步 选择配置文件的类型，一般第一个即可</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E6%AD%A5-%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%E4%BB%A5%E4%B8%8B%E4%BE%9D%E8%B5%96%EF%BC%8C%E7%9B%B4%E6%8E%A5yes%E5%B0%B1%E8%A1%8C%E4%BA%86%EF%BC%8C%E5%A6%82%E6%9E%9C%E4%B8%8D%E7%94%A8%E9%80%89no"><span class="toc-number">1.3.2.7.</span> <span class="toc-text">第七步 是否需要以下依赖，直接yes就行了，如果不用选no</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E6%AD%A5-%E9%80%89%E6%8B%A9%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E7%9A%84%E6%96%B9%E5%BC%8F%EF%BC%8C%E6%A0%B9%E6%8D%AE%E4%BD%A0%E9%A1%B9%E7%9B%AE%E6%89%80%E9%9C%80%E7%9A%84%E5%8C%85%E7%AE%A1%E7%90%86%E9%80%89%E6%8B%A9"><span class="toc-number">1.3.2.8.</span> <span class="toc-text">第八步 选择安装依赖的方式，根据你项目所需的包管理选择</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vscode-settings-json"><span class="toc-number">1.4.</span> <span class="toc-text">.vscode&#x2F;settings.json</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEhusky"><span class="toc-number">2.</span> <span class="toc-text">配置husky</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85husky%E4%B8%8Elint-staged"><span class="toc-number">2.1.</span> <span class="toc-text">安装husky与lint-staged</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96husky"><span class="toc-number">2.2.</span> <span class="toc-text">初始化husky</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%87%E5%AE%9Ahusky%E7%BB%99lint-staged%E6%89%A7%E8%A1%8C"><span class="toc-number">2.3.</span> <span class="toc-text">指定husky给lint-staged执行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEcommitlint"><span class="toc-number">3.</span> <span class="toc-text">配置commitlint</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-commitlint"><span class="toc-number">3.1.</span> <span class="toc-text">安装  commitlint</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B9%E7%9B%AE%E5%BD%95-%E6%96%B0%E5%BB%BA-commitlint-config-cjs"><span class="toc-number">3.2.</span> <span class="toc-text">根目录 新建 commitlint.config.cjs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8package-json%E4%B8%AD%E9%85%8D%E7%BD%AEscripts%E5%91%BD%E4%BB%A4"><span class="toc-number">3.3.</span> <span class="toc-text">在package.json中配置scripts命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%99-husky%E6%96%B0%E5%A2%9Ecommit-msg%E9%92%A9%E5%AD%90%E6%8C%87%E4%BB%A4"><span class="toc-number">3.4.</span> <span class="toc-text">给 husky新增commit-msg钩子指令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">配置环境变量配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B9%E7%9B%AE%E5%BD%95%E6%96%B0%E5%BB%BA%E5%BC%80%E5%8F%91%E3%80%81%E6%B5%8B%E8%AF%95%E3%80%81%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">4.1.</span> <span class="toc-text">根目录新建开发、测试、生产环境配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9"><span class="toc-number">4.2.</span> <span class="toc-text">文件内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%A8%A1%E6%9D%BF"><span class="toc-number">4.2.1.</span> <span class="toc-text">开发环境模板</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E6%A8%A1%E6%9D%BF"><span class="toc-number">4.2.2.</span> <span class="toc-text">生产环境模板</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%A8%A1%E6%9D%BF"><span class="toc-number">4.2.3.</span> <span class="toc-text">测试环境模板</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%97%B6%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">4.2.4.</span> <span class="toc-text">启动时设置环境变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%99import-meta-env-%E6%B7%BB%E5%8A%A0%E5%8F%98%E9%87%8F%E6%8F%90%E7%A4%BA"><span class="toc-number">4.2.5.</span> <span class="toc-text">给import.meta.env 添加变量提示</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E5%A2%9E%E8%B7%AF%E5%BE%84%E5%88%AB%E5%90%8D"><span class="toc-number">5.</span> <span class="toc-text">新增路径别名</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8vite-config-ts%E4%B8%AD%E6%96%B0%E5%A2%9E%E4%BB%A5%E4%B8%8B%E9%85%8D%E7%BD%AE"><span class="toc-number">5.1.</span> <span class="toc-text">在vite.config.ts中新增以下配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/10/%E5%AE%89%E5%8D%93/%E5%88%A9%E7%94%A8github-Action%E7%BC%96%E8%AF%91%E5%AE%89%E5%8D%93%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8/" title="利用github Action编译安卓内核驱动">利用github Action编译安卓内核驱动</a><time datetime="2024-11-10T04:58:06.000Z" title="发表于 2024-11-10 04:58:06">2024-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/10/vue/%E8%A7%A3%E5%86%B3safari%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8window-open%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/" title="解决safari浏览器使用window.open失效的问题">解决safari浏览器使用window.open失效的问题</a><time datetime="2023-07-10T04:58:06.000Z" title="发表于 2023-07-10 04:58:06">2023-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/02/02/Cloudflare%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89Docker%E9%95%9C%E5%83%8F%E6%BA%90/" title="Cloudflare搭建私有Docker镜像源">Cloudflare搭建私有Docker镜像源</a><time datetime="2023-02-02T04:58:06.000Z" title="发表于 2023-02-02 04:58:06">2023-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/20/docker%E8%AE%B0%E5%BD%95/" title="Docker记录">Docker记录</a><time datetime="2022-06-20T04:58:06.000Z" title="发表于 2022-06-20 04:58:06">2022-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/02/07/vue/vue3%E5%85%B6%E4%BB%96/" title="vue3其他">vue3其他</a><time datetime="2022-02-07T04:58:06.000Z" title="发表于 2022-02-07 04:58:06">2022-02-07</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2025 By admin</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/live2d-widget/autoload.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="255,255,255" opacity="1" zIndex="-1" count="99" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script></div></body></html>

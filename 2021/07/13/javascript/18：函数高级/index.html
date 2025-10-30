@@ -1,0 +1,329 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>函数高级 | 个人博客</title><meta name="author" content="admin"><meta name="copyright" content="admin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="18：函数高级一、闭包函数1. 函数定义阶段 在堆内存中开辟一段存储空间 把函数体内的代码存储在这一段空间内 把堆空间地址赋值给栈内存中的变量  2. 函数调用阶段 按照变量名内的空间地址找到堆内存中对应的存储空间 在调用栈中开辟一段新的作用域执行空间 在执行空间中进行形参赋值 在执行空间中进行预解析（声明提升，检查报错等） 在执行空间中完整执行一遍函数内的代码 将当前作用域执行空间，销毁  3.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="函数高级">
+<meta property="og:url" content="https://blog.p0.ee/2021/07/13/javascript/18%EF%BC%9A%E5%87%BD%E6%95%B0%E9%AB%98%E7%BA%A7/index.html">
+<meta property="og:site_name" content="个人博客">
+<meta property="og:description" content="18：函数高级一、闭包函数1. 函数定义阶段 在堆内存中开辟一段存储空间 把函数体内的代码存储在这一段空间内 把堆空间地址赋值给栈内存中的变量  2. 函数调用阶段 按照变量名内的空间地址找到堆内存中对应的存储空间 在调用栈中开辟一段新的作用域执行空间 在执行空间中进行形参赋值 在执行空间中进行预解析（声明提升，检查报错等） 在执行空间中完整执行一遍函数内的代码 将当前作用域执行空间，销毁  3.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.p0.ee/img/Logo.png">
+<meta property="article:published_time" content="2021-07-13T20:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-30T02:51:52.315Z">
+<meta property="article:author" content="admin">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.p0.ee/img/Logo.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "函数高级",
+  "url": "https://blog.p0.ee/2021/07/13/javascript/18%EF%BC%9A%E5%87%BD%E6%95%B0%E9%AB%98%E7%BA%A7/",
+  "image": "https://blog.p0.ee/img/Logo.png",
+  "datePublished": "2021-07-13T20:00:00.000Z",
+  "dateModified": "2025-10-30T02:51:52.315Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "admin",
+      "url": "https://blog.p0.ee/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/g.jpeg"><link rel="canonical" href="https://blog.p0.ee/2021/07/13/javascript/18%EF%BC%9A%E5%87%BD%E6%95%B0%E9%AB%98%E7%BA%A7/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '函数高级',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/mycss.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/background.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/Logo.png" alt="Logo"><span class="site-name">个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">函数高级</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">函数高级</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2021-07-13T20:00:00.000Z" title="发表于 2021-07-13 20:00:00">2021-07-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/JavaScript/">JavaScript</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h1 id="18：函数高级"><a href="#18：函数高级" class="headerlink" title="18：函数高级"></a>18：函数高级</h1><h1 id="一、闭包函数"><a href="#一、闭包函数" class="headerlink" title="一、闭包函数"></a>一、闭包函数</h1><h3 id="1-函数定义阶段"><a href="#1-函数定义阶段" class="headerlink" title="1. 函数定义阶段"></a>1. 函数定义阶段</h3><ol>
+<li>在堆内存中开辟一段存储空间</li>
+<li>把函数体内的代码存储在这一段空间内</li>
+<li>把堆空间地址赋值给栈内存中的变量</li>
+</ol>
+<h3 id="2-函数调用阶段"><a href="#2-函数调用阶段" class="headerlink" title="2. 函数调用阶段"></a>2. 函数调用阶段</h3><ol>
+<li>按照变量名内的空间地址找到堆内存中对应的存储空间</li>
+<li>在调用栈中开辟一段新的<strong>作用域执行空间</strong></li>
+<li>在执行空间中进行形参赋值</li>
+<li>在执行空间中进行预解析（声明提升，检查报错等）</li>
+<li>在执行空间中完整执行一遍函数内的代码</li>
+<li>将当前作用域执行空间，<strong>销毁</strong></li>
+</ol>
+<h3 id="3-不会销毁的函数执行空间"><a href="#3-不会销毁的函数执行空间" class="headerlink" title="3. 不会销毁的函数执行空间"></a>3. 不会销毁的函数执行空间</h3><ol>
+<li>当函数内返回了一个复杂数据类型</li>
+<li>并且函数外部有变量接收了这个复杂数据类型</li>
+<li>函数执行完毕后的执行空间不会被销毁</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">fn</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> obj = &#123; <span class="attr">name</span>: <span class="string">&#x27;admin&#x27;</span> &#125;</span><br><span class="line">  <span class="keyword">return</span> obj</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> res = <span class="title function_">fn</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(res);		<span class="comment">// &#123; name: &#x27;admin&#x27; &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果需要释放这个空间，给 res 重定向, 即可</span></span><br><span class="line">res = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-闭包"><a href="#4-闭包" class="headerlink" title="4. 闭包"></a>4. 闭包</h3><ol>
+<li>概念：通过作用域的嵌套，将原本的局部变量（原本要删除的数据）进化成私有变量的过程，叫闭包<ul>
+<li>原理：利用了不会被销毁的执行空间，保存原本要删除的数据</li>
+</ul>
+</li>
+<li>创建一个不会被销毁的作用域执行空间</li>
+<li>直接 或 间接 返回一个函数（复杂数据）</li>
+<li>外部有变量接收的返回的复杂数据</li>
+<li>返回的这个函数使用了外部函数的局部变量（私有变量）</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">fn</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">let</span> a = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> a;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> res = <span class="title function_">fn</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>( <span class="title function_">res</span>() );  <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>特点<ul>
+<li>可以在函数外面控制到函数内部的变量</li>
+<li>避免全局变量命名空间的污染</li>
+<li>延长了变量的生命周期（多占用内存）</li>
+<li>因为存在不会销毁的空间，低版本浏览器会造成内存溢出</li>
+</ul>
+</li>
+<li>沙箱模式</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">outer</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> a = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">let</span> str = <span class="string">&#x27;hello world&#x27;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 返回一个对象</span></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="comment">// 对每个私有变量都准备两个函数：get用来获取，set用来修改</span></span><br><span class="line">    <span class="title function_">getA</span> () &#123; <span class="keyword">return</span> a &#125;,</span><br><span class="line">    <span class="title function_">setA</span> (val) &#123; a = val &#125;,</span><br><span class="line">    <span class="title function_">getStr</span> (val) &#123; <span class="keyword">return</span> a &#125;,</span><br><span class="line">    <span class="attr">setStr</span>: <span class="keyword">function</span> (<span class="params">val</span>) &#123; a = val &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="二、函数防抖"><a href="#二、函数防抖" class="headerlink" title="二、函数防抖"></a>二、函数防抖</h1><ol>
+<li>函数防抖：<ul>
+<li>短时间内快速触发同一个事件</li>
+<li>执行之前都先干掉上一次，保证只执行最后一次</li>
+</ul>
+</li>
+<li>特点：<ul>
+<li>提升执行速度，节省资源</li>
+</ul>
+</li>
+<li>使用<code>setTimeout</code>实现函数防抖</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> t = <span class="literal">null</span>;</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">onmousemove</span> = <span class="keyword">function</span> (<span class="params"></span>)&#123;</span><br><span class="line">  <span class="built_in">clearTimeout</span>(t);</span><br><span class="line">  t = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;函数防抖：多次触发只会执行一次&quot;</span>);</span><br><span class="line">  &#125;, <span class="number">300</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>应用场景 - 一些高频事件，在被连续触发时，其实只需要生效一次即可，如：<ul>
+<li>搜索框搜索输入：只需用户最后一次输入完，再发送请求</li>
+<li>以此可以延伸出手机号、邮箱等输入时的实时验证</li>
+<li>窗口大小事件onresize，只需窗口调整完成后，计算窗口大小，防止重复渲染</li>
+</ul>
+</li>
+</ol>
+<h1 id="三、函数节流"><a href="#三、函数节流" class="headerlink" title="三、函数节流"></a>三、函数节流</h1><ol>
+<li>函数节流：<ul>
+<li>短时间内快速触发同一个事件</li>
+<li>上次执行未结束，不能再次触发，一次执行完毕后，才能触发下一次</li>
+</ul>
+</li>
+<li>特点：<ul>
+<li>提升执行速度，节省资源</li>
+</ul>
+</li>
+<li>使用 状态的概念 实现函数节流</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> t = <span class="literal">null</span>;</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">onmousemove</span> = <span class="keyword">function</span> (<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">if</span>(t) <span class="keyword">return</span>;</span><br><span class="line">    t = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;函数节流&quot;</span>);</span><br><span class="line">        t = <span class="literal">null</span>;</span><br><span class="line">    &#125;, <span class="number">300</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>应用场景<ul>
+<li>DOM 元素的拖拽（mousemove）</li>
+<li>射击游戏在单位时间只能发射一颗子弹（mousedown&#x2F;keydown）</li>
+<li>搜索联想（keyup）</li>
+<li>懒加载，在滚动过程中判断是否需要加载图片（scroll）</li>
+</ul>
+</li>
+</ol>
+<h1 id="四、函数的柯里化（Currying）"><a href="#四、函数的柯里化（Currying）" class="headerlink" title="四、函数的柯里化（Currying）"></a>四、函数的柯里化（Currying）</h1><ul>
+<li>是一种函数的高阶技术，用于函数的转换，并不会执行函数。可将一次传入多个参数的函数，转换为多次执行一次执行传入一个参数的函数<ul>
+<li>如：<code>fn(1,2,3)</code>转换为<code>fn(1)(2)(3)</code></li>
+<li>利用了闭包, 把第一次传递的参数保存下来(延长生命周期)</li>
+<li>也可以保存程序的逐步执行结果</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">fn</span>(<span class="params">a, b</span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 转为</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">fn</span>(<span class="params">a</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">function</span> (<span class="params">b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="五、递归"><a href="#五、递归" class="headerlink" title="五、递归"></a>五、递归</h1><p>应用</p>
+<p>深拷贝</p>
+<p>任一层，都是只拷贝值</p>
+<p>复杂数据：对象，数组，函数</p>
+<p>对象的遍历</p>
+<p>数组的遍历</p>
+<p>函数的深拷贝：bind</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.p0.ee">admin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.p0.ee/2021/07/13/javascript/18%EF%BC%9A%E5%87%BD%E6%95%B0%E9%AB%98%E7%BA%A7/">https://blog.p0.ee/2021/07/13/javascript/18%EF%BC%9A%E5%87%BD%E6%95%B0%E9%AB%98%E7%BA%A7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.p0.ee" target="_blank"></a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a></div><div class="post-share"><div class="social-share" data-image="/img/Logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2021/07/13/javascript/17%EF%BC%9A%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B/" title="面向对象编程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">面向对象编程</div></div><div class="info-2"><div class="info-item-1">17：面向对象编程一、什么是面向对象 面向对象编程（Object-Oriented Programming, OOP）是一种软件开发方法，它将数据和方法封装在一起，形成一个对象，通过对象之间的交互实现程序的功能。 每个对象都有自己的状态和行为，对象之间通过调用彼此的方法来实现交互。 这种编程范式强调代码的可重用性、可维护性和灵活性，使得程序开发更加高效和可靠。 同时，面向对象编程也是一种更加自然的编程方式，因为它更接近我们日常生活中的实体和行为。  二、面向过程和面向对象 面向过程： 关注过程的编程模式 在面向过程编程中，数据和方法是分离的，程序主要由一系列函数组成，每个函数都是一个独立的模块，它们之间通过参数和返回值进行交互。 程序的执行顺序是由函数的调用顺序决定的。...</div></div></div></a><a class="pagination-related" href="/2021/07/13/javascript/19%EF%BC%9A%E7%BB%A7%E6%89%BF/" title="函数高级"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">函数高级</div></div><div class="info-2"><div class="info-item-1">19：继承一、继承 面向对象三大特点：封装，继承，多态  封装：打包 继承：如果一个对象A不具有某个功能a，通过某种方式使用了对象B的a功能 的过程 多态：对象或功能的多种形态，在使用某个对象时，不关心从哪来，在封装某个对象时，不关心将要在哪被使用   继承 构造函数执行之后得到的实例，继承了原型身上的方法（实例继承了类的原型） 类与类之间的继承   继承方式 构造函数继承（改变this指向继承）  call，apply，bind 简单方便易操作 非常易于做多继承 只能继承构造函数内的属性或方法，不能继承原型身上的属性或方法   原型对象继承  其实就是在拷贝原型对象，同时注意深浅拷贝 只能继承原型对象上的属性或方法，不能继承构造函数内的属性或方法 可以实现多继承   原型链继承  既能继承构造函数内的属性或方法，又能继承原型上的属性或方法 但是不方便处理参数 不适合多继承   混合（组合）继承  构造函数+原型对象 构造函数+原型链 集合了各种方式的优点   ES6新增的class的继承...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2021/07/10/javascript/01%EF%BC%9AJS%E5%9F%BA%E7%A1%80/" title="JS基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">JS基础</div></div><div class="info-2"><div class="info-item-1">01：JS基础一、JavaScript 介绍 网页的组成：结构html，样式css，行为js  html：超文本标记语言 css：层叠样式表 javascript：网页的脚本语言，用来描述网页的逻辑交互行为 是一种基于对象和事件驱动并具有相对安全性的客户端脚本语言。同时也是一种广泛用于客户端Web开发的脚本语言，常用来给HTML网页添加动态功能，比如响应用户的各种操作。     javascript的组成：ECMAScript，DOM，BOM  ECMAScript：语法，规范，标准，定义了javascript的语法规范,描述了语言的基本语法和数据类型。 用来约束代码用什么样的格式书写，写什么，如何执行   DOM（Document Object Model）：文档对象模型，document，表示网页。 提供了网页的相关操作，标准化组织是W3C。 有一套成熟的可以操作页面元素的 API，通过 DOM 可以操作页面中的元素。 如：增加元素，删除元素，改变元素位置等     BOM（Browser Object...</div></div></div></a><a class="pagination-related" href="/2021/07/10/javascript/02%EF%BC%9A%E5%88%86%E6%94%AF/" title="分支"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">分支</div></div><div class="info-2"><div class="info-item-1">02：分支一、程序结构 顺序结构：默认的程序执行顺序，从上到下依次执行 分支结构：根据程序执行过程中可能产生的不同信息，决定执行不同的功能 配合分支语句   循环结构：根据执行条件重复执行某个功能 配合循环语句    二、分支语句 单分支：if()&#123;&#125; 根据条件决定执行或不执行    123456789101112// if()&#123;&#125;//     if      语句名，关键字//     ()      执行条件//     &#123;&#125;      执行条件符合时（true），要执行的代码console.log(1);if( true )&#123;    console.log(&quot;hello&quot;);&#125;console.log(2);   双分支：if(){}else{} 根据条件决定执行A或执行B    12345678910111213141516// if()&#123;&#125;else&#123;&#125;    // if      语句名1，关键字    // ()     ...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/03%EF%BC%9A%E5%BE%AA%E7%8E%AF/" title="循环"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">循环</div></div><div class="info-2"><div class="info-item-1">03：循环一、循环结构介绍 循环结构存在的意义  计算1+2+3+……+1000的和 需要向计算机输入重复的命令 节省向计算机输入命令的时间，并没有提升性能   循环结构的三要素  创建（初始化）计数器 执行条件 计数器的改变   死循环：无法通过自身控制结束的循环  瞬间占用大量性能，造成计算机死机，程序崩溃 尽量避免产生死循环 但可以利用死循环解决无法确定重复执行次数的问题    二、循环语句 while 循环语句  1234567891011// while()&#123;&#125;    // while       语句名，关键字    // ()          执行条件    // &#123;&#125;          当执行条件为true时，要重复执行的语句// 打印10次hellovar i = 0;while(i &lt; 10)&#123;    console.log(&quot;hello&quot;);    i++;&#125;   do...while 循环语句  123456789101112//...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/04%EF%BC%9A%E5%87%BD%E6%95%B0/" title="函数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">函数</div></div><div class="info-2"><div class="info-item-1">04：函数一、函数的基本概念 函数的概念 函数，即功能。将实现了某个功能的代码，集中起来，通过函数语句进行封装，封装之后，可以选择直接执行或行为 的 代码段。 函数是一种数据类型：function 对象：数据的打包，函数：代码的打包     函数最大的意义：封装功能 函数的特点： 重复使用 选择使用 忽略细节    二、函数的使用 创建函数 声明式：使用function关键字创建函数 function 函数名(){} var 变量名   赋值式：配合变量，赋个函数值，将函数作为一个值或表达式使用 var 变量名 &#x3D; function(){} 将函数作为值使用      123456789// 固定语法：// function 函数名()&#123;&#125;    // function：声明关键字，用来声明函数    // 函数名    // ()：参数，函数的入口    // &#123;&#125;：函数体，内放置要封装的代码function fn()&#123;	console.log(&quot;hello js&quot;);&#125;   使用函数...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/05%EF%BC%9A%E5%AF%B9%E8%B1%A1/" title="对象"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">对象</div></div><div class="info-2"><div class="info-item-1">05：对象一、对象的概念和特点 对象：是一种复杂数据，是数据的打包形式 无序集合，object对象，花括号形式 以键值对的形式存在，键和值一一对应，使用冒号连接，键值对之间使用逗号隔开 键：key，要遵守变量的命名规则，一个对象中不允许出现重复的键 值：value，就是正常数据 使用场景：一般用来打包非同类但属于同一个个体的数据 一个班级中某一个学生的所有信息 姓名，性别，年龄，手机号，住址     有序集合，array对象，中括号形式  数据之间默认以索引的形式，进行标记，索引从0开始，到length-1 使用场景：一般用来打包同类数据  一个班级所有学生的姓名  姓名，姓名，姓名       特点： 提升了数据的查找速度 提升了数据的传输速度   本质：键值对 键和值成对出现，键和值使用冒号连接，键值对之间使用逗号隔开，使用花括号做包裹 &#123;name:&quot;admin&quot;,age:18,sex:&quot;男&quot;&#125;   意义 存储数据 编程（面向对象编程）    二、对象的创建 字面量：var obj = &#123;...</div></div></div></a><a class="pagination-related" href="/2021/07/12/javascript/06%EF%BC%9A%E6%95%B0%E7%BB%84/" title="数组"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-12</div><div class="info-item-2">数组</div></div><div class="info-2"><div class="info-item-1">06：数组一、数组的概念和特点 数组是对象的一种，数组内的数据会按照顺序进行排列，是一种有序集合 数据按照顺序被标记，序号，也叫索引，从0开始 arr[0]   数组拥有length属性，用来表示自身有多少个数据 arr.length   因为索引的规律为从0开始递增，通过length属性标记数据总数，所以可以通过循环语句遍历数组    123for(var i=0; i&lt;arr.length; i++)&#123;  console.log( arr[i] );&#125;  二、数组的创建 字面量：var arr1 = [数据1, 数据2, 数据3, ...]; 创建函数：var arr2 = new Array(数据1, 数据2, 数据3, ...); 区别：当有且只有一个数值型数据时，字面量创建就是作为一个数据，构造函数创建会作为数组的长度，每个位置为undefined  三、数组的操作 索引+长度操作  原生操作，底层操作，所有数组操作功能的基础 查：arr[索引] 改：arr[索引] = &quot;新值&quot; 增：默认只能在数组的最后增加...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">admin</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">一个前端程序员，爱折腾，爱技术分享</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#18%EF%BC%9A%E5%87%BD%E6%95%B0%E9%AB%98%E7%BA%A7"><span class="toc-number">1.</span> <span class="toc-text">18：函数高级</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E9%97%AD%E5%8C%85%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">一、闭包函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%87%BD%E6%95%B0%E5%AE%9A%E4%B9%89%E9%98%B6%E6%AE%B5"><span class="toc-number">2.0.1.</span> <span class="toc-text">1. 函数定义阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E9%98%B6%E6%AE%B5"><span class="toc-number">2.0.2.</span> <span class="toc-text">2. 函数调用阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%B8%8D%E4%BC%9A%E9%94%80%E6%AF%81%E7%9A%84%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%A9%BA%E9%97%B4"><span class="toc-number">2.0.3.</span> <span class="toc-text">3. 不会销毁的函数执行空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%97%AD%E5%8C%85"><span class="toc-number">2.0.4.</span> <span class="toc-text">4. 闭包</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96"><span class="toc-number">3.</span> <span class="toc-text">二、函数防抖</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%87%BD%E6%95%B0%E8%8A%82%E6%B5%81"><span class="toc-number">4.</span> <span class="toc-text">三、函数节流</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%87%BD%E6%95%B0%E7%9A%84%E6%9F%AF%E9%87%8C%E5%8C%96%EF%BC%88Currying%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">四、函数的柯里化（Currying）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E9%80%92%E5%BD%92"><span class="toc-number">6.</span> <span class="toc-text">五、递归</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/10/%E5%AE%89%E5%8D%93/%E5%88%A9%E7%94%A8github-Action%E7%BC%96%E8%AF%91%E5%AE%89%E5%8D%93%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8/" title="利用github Action编译安卓内核驱动">利用github Action编译安卓内核驱动</a><time datetime="2024-11-10T04:58:06.000Z" title="发表于 2024-11-10 04:58:06">2024-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/10/vue/%E8%A7%A3%E5%86%B3safari%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8window-open%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/" title="解决safari浏览器使用window.open失效的问题">解决safari浏览器使用window.open失效的问题</a><time datetime="2023-07-10T04:58:06.000Z" title="发表于 2023-07-10 04:58:06">2023-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/02/02/Cloudflare%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89Docker%E9%95%9C%E5%83%8F%E6%BA%90/" title="Cloudflare搭建私有Docker镜像源">Cloudflare搭建私有Docker镜像源</a><time datetime="2023-02-02T04:58:06.000Z" title="发表于 2023-02-02 04:58:06">2023-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/20/docker%E8%AE%B0%E5%BD%95/" title="Docker记录">Docker记录</a><time datetime="2022-06-20T04:58:06.000Z" title="发表于 2022-06-20 04:58:06">2022-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/02/07/vue/vue3%E5%85%B6%E4%BB%96/" title="vue3其他">vue3其他</a><time datetime="2022-02-07T04:58:06.000Z" title="发表于 2022-02-07 04:58:06">2022-02-07</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2025 By admin</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/live2d-widget/autoload.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="255,255,255" opacity="1" zIndex="-1" count="99" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script></div></body></html>

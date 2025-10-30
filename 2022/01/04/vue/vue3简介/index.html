@@ -1,0 +1,278 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>vue3简介 | 个人博客</title><meta name="author" content="admin"><meta name="copyright" content="admin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. Vue3简介 2020年9月18日，Vue.js发布版3.0版本，代号：One Piece（n 经历了：4800+次提交、40+个RFC、600+次PR、300+贡献者 官方发版地址：Release v3.0.0 One Piece · vuejs&#x2F;core  2. Vue3对比Vue21.1. 【性能的提升】 打包大小减少41%。  初次渲染快55%, 更新渲染快133%。  内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue3简介">
+<meta property="og:url" content="https://blog.p0.ee/2022/01/04/vue/vue3%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:site_name" content="个人博客">
+<meta property="og:description" content="1. Vue3简介 2020年9月18日，Vue.js发布版3.0版本，代号：One Piece（n 经历了：4800+次提交、40+个RFC、600+次PR、300+贡献者 官方发版地址：Release v3.0.0 One Piece · vuejs&#x2F;core  2. Vue3对比Vue21.1. 【性能的提升】 打包大小减少41%。  初次渲染快55%, 更新渲染快133%。  内">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://localhost:4000/images/1695089947298-161c1b47-eb86-42fb-b1f8-d6a4fcab8ee2.png">
+<meta property="article:published_time" content="2022-01-04T16:23:07.000Z">
+<meta property="article:modified_time" content="2025-10-30T02:51:52.318Z">
+<meta property="article:author" content="admin">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://localhost:4000/images/1695089947298-161c1b47-eb86-42fb-b1f8-d6a4fcab8ee2.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "vue3简介",
+  "url": "https://blog.p0.ee/2022/01/04/vue/vue3%E7%AE%80%E4%BB%8B/",
+  "image": "http://localhost:4000/images/1695089947298-161c1b47-eb86-42fb-b1f8-d6a4fcab8ee2.png",
+  "datePublished": "2022-01-04T16:23:07.000Z",
+  "dateModified": "2025-10-30T02:51:52.318Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "admin",
+      "url": "https://blog.p0.ee/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/g.jpeg"><link rel="canonical" href="https://blog.p0.ee/2022/01/04/vue/vue3%E7%AE%80%E4%BB%8B/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'vue3简介',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/mycss.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/background.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/Logo.png" alt="Logo"><span class="site-name">个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">vue3简介</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">vue3简介</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2022-01-04T16:23:07.000Z" title="发表于 2022-01-04 16:23:07">2022-01-04</time></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h1 id="1-Vue3简介"><a href="#1-Vue3简介" class="headerlink" title="1. Vue3简介"></a>1. Vue3简介</h1><ul>
+<li>2020年9月18日，<code>Vue.js</code>发布版<code>3.0</code>版本，代号：<code>One Piece</code>（n</li>
+<li>经历了：<a target="_blank" rel="noopener" href="https://github.com/vuejs/core/commits/main">4800+次提交</a>、<a target="_blank" rel="noopener" href="https://github.com/vuejs/rfcs/tree/master/active-rfcs">40+个RFC</a>、<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue-next/pulls?q=is:pr+is:merged+-author:app/dependabot-preview+">600+次PR</a>、<a target="_blank" rel="noopener" href="https://github.com/vuejs/core/graphs/contributors">300+贡献者</a></li>
+<li>官方发版地址：<a target="_blank" rel="noopener" href="https://github.com/vuejs/core/releases/tag/v3.0.0">Release v3.0.0 One Piece · vuejs&#x2F;core</a><br><img src="/images/1695089947298-161c1b47-eb86-42fb-b1f8-d6a4fcab8ee2.png" alt="image.png"></li>
+</ul>
+<h1 id="2-Vue3对比Vue2"><a href="#2-Vue3对比Vue2" class="headerlink" title="2. Vue3对比Vue2"></a>2. Vue3对比Vue2</h1><h2 id="1-1-【性能的提升】"><a href="#1-1-【性能的提升】" class="headerlink" title="1.1. 【性能的提升】"></a>1.1. 【性能的提升】</h2><ul>
+<li><p>打包大小减少<code>41%</code>。</p>
+</li>
+<li><p>初次渲染快<code>55%</code>, 更新渲染快<code>133%</code>。</p>
+</li>
+<li><p>内存减少<code>54%</code>。</p>
+</li>
+</ul>
+<h2 id="1-2-【-源码的升级】"><a href="#1-2-【-源码的升级】" class="headerlink" title="1.2.【 源码的升级】"></a>1.2.【 源码的升级】</h2><ul>
+<li><p>使用<code>Proxy</code>代替<code>defineProperty</code>实现响应式。</p>
+</li>
+<li><p>重写虚拟<code>DOM</code>的实现和<code>Tree-Shaking</code>。</p>
+</li>
+</ul>
+<h2 id="1-3-【拥抱TypeScript】"><a href="#1-3-【拥抱TypeScript】" class="headerlink" title="1.3. 【拥抱TypeScript】"></a>1.3. 【拥抱TypeScript】</h2><ul>
+<li><code>Vue3</code>可以更好的支持<code>TypeScript</code>。</li>
+</ul>
+<h2 id="1-4-【新的特性】"><a href="#1-4-【新的特性】" class="headerlink" title="1.4. 【新的特性】"></a>1.4. 【新的特性】</h2><ol>
+<li><p><code>Composition API</code>（组合<code>API</code>）：</p>
+<ul>
+<li><p><code>setup</code></p>
+</li>
+<li><p><code>ref</code>与<code>reactive</code></p>
+</li>
+<li><p><code>computed</code>与<code>watch</code></p>
+<p>……</p>
+</li>
+</ul>
+</li>
+<li><p>新的内置组件：</p>
+<ul>
+<li><p><code>Fragment</code></p>
+</li>
+<li><p><code>Teleport</code></p>
+</li>
+<li><p><code>Suspense</code></p>
+<p>……</p>
+</li>
+</ul>
+</li>
+<li><p>其他改变：</p>
+<ul>
+<li><p>新的生命周期钩子</p>
+</li>
+<li><p><code>data</code> 选项应始终被声明为一个函数</p>
+</li>
+<li><p>移除<code>keyCode</code>支持作为<code> v-on</code> 的修饰符</p>
+<p>……</p>
+</li>
+</ul>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.p0.ee">admin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.p0.ee/2022/01/04/vue/vue3%E7%AE%80%E4%BB%8B/">https://blog.p0.ee/2022/01/04/vue/vue3%E7%AE%80%E4%BB%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.p0.ee" target="_blank"></a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a></div><div class="post-share"><div class="social-share" data-image="http://localhost:4000/images/1695089947298-161c1b47-eb86-42fb-b1f8-d6a4fcab8ee2.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/01/03/vue/vite%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96%E5%9F%BA%E5%BB%BA/" title="vite项目初始化基建"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">vite项目初始化基建</div></div><div class="info-2"><div class="info-item-1">配置eslint什么是eslint? ESLint 是一个 JavaScript 和 TypeScript 的静态代码分析工具，它用于识别代码中的问题并提供一致性和规范性。简单来说，它的作用是：  检测错误和潜在的问题： ESLint 可以帮助你找到代码中的错误、潜在的 bug 以及不规范的写法，从而提高代码的质量和稳定性。 强制执行代码风格规范： 它可以根据预定义的规则或自定义的规则来强制执行一致的代码风格，以确保团队成员之间的代码风格一致，提高代码的可读性和可维护性。 提供自定义规则和插件支持： ESLint 允许你根据项目的特定需求定义自定义规则，并且支持各种插件，可以满足不同项目的特定需求。  总的来说，ESLint 可以帮助开发人员编写更加干净、可靠和符合规范的代码。  安装命令12# 方案1 pnpm i -D eslint  规则方案12345# 使用集成方案，内置好了所需规则pnpm i -D @antfu/eslint-config # eslint默认方案，通过命令初始化eslint规则npx eslint...</div></div></div></a><a class="pagination-related" href="/2022/01/07/vue/%E5%88%9B%E5%BB%BAvue3%E5%B7%A5%E7%A8%8B/" title="创建vue3工程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">创建vue3工程</div></div><div class="info-2"><div class="info-item-1">1. 创建Vue3工程2.1. 【基于 vue-cli 创建】点击查看官方文档  备注：目前vue-cli已处于维护模式，官方推荐基于 Vite 创建项目。  1234567891011121314151617## 查看@vue/cli版本，确保@vue/cli版本在4.5.0以上vue --version## 安装或者升级你的@vue/cli npm install -g @vue/cli## 执行创建命令vue create vue_test##  随后选择3.x##  Choose a version of Vue.js that you want to start the project with (Use arrow keys)##  &gt; 3.x##    2.x## 启动cd vue_testnpm run serve   2.2. 【基于 vite 创建】(推荐)vite 是新一代前端构建工具，官网地址：https://vitejs.cn，vite的优势如下：  轻量快速的热重载（HMR），能实现极速的服务启动。 对 TypeScript、JSX、CSS...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2021/07/10/javascript/01%EF%BC%9AJS%E5%9F%BA%E7%A1%80/" title="JS基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">JS基础</div></div><div class="info-2"><div class="info-item-1">01：JS基础一、JavaScript 介绍 网页的组成：结构html，样式css，行为js  html：超文本标记语言 css：层叠样式表 javascript：网页的脚本语言，用来描述网页的逻辑交互行为 是一种基于对象和事件驱动并具有相对安全性的客户端脚本语言。同时也是一种广泛用于客户端Web开发的脚本语言，常用来给HTML网页添加动态功能，比如响应用户的各种操作。     javascript的组成：ECMAScript，DOM，BOM  ECMAScript：语法，规范，标准，定义了javascript的语法规范,描述了语言的基本语法和数据类型。 用来约束代码用什么样的格式书写，写什么，如何执行   DOM（Document Object Model）：文档对象模型，document，表示网页。 提供了网页的相关操作，标准化组织是W3C。 有一套成熟的可以操作页面元素的 API，通过 DOM 可以操作页面中的元素。 如：增加元素，删除元素，改变元素位置等     BOM（Browser Object...</div></div></div></a><a class="pagination-related" href="/2021/07/10/javascript/02%EF%BC%9A%E5%88%86%E6%94%AF/" title="分支"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">分支</div></div><div class="info-2"><div class="info-item-1">02：分支一、程序结构 顺序结构：默认的程序执行顺序，从上到下依次执行 分支结构：根据程序执行过程中可能产生的不同信息，决定执行不同的功能 配合分支语句   循环结构：根据执行条件重复执行某个功能 配合循环语句    二、分支语句 单分支：if()&#123;&#125; 根据条件决定执行或不执行    123456789101112// if()&#123;&#125;//     if      语句名，关键字//     ()      执行条件//     &#123;&#125;      执行条件符合时（true），要执行的代码console.log(1);if( true )&#123;    console.log(&quot;hello&quot;);&#125;console.log(2);   双分支：if(){}else{} 根据条件决定执行A或执行B    12345678910111213141516// if()&#123;&#125;else&#123;&#125;    // if      语句名1，关键字    // ()     ...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/03%EF%BC%9A%E5%BE%AA%E7%8E%AF/" title="循环"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">循环</div></div><div class="info-2"><div class="info-item-1">03：循环一、循环结构介绍 循环结构存在的意义  计算1+2+3+……+1000的和 需要向计算机输入重复的命令 节省向计算机输入命令的时间，并没有提升性能   循环结构的三要素  创建（初始化）计数器 执行条件 计数器的改变   死循环：无法通过自身控制结束的循环  瞬间占用大量性能，造成计算机死机，程序崩溃 尽量避免产生死循环 但可以利用死循环解决无法确定重复执行次数的问题    二、循环语句 while 循环语句  1234567891011// while()&#123;&#125;    // while       语句名，关键字    // ()          执行条件    // &#123;&#125;          当执行条件为true时，要重复执行的语句// 打印10次hellovar i = 0;while(i &lt; 10)&#123;    console.log(&quot;hello&quot;);    i++;&#125;   do...while 循环语句  123456789101112//...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/04%EF%BC%9A%E5%87%BD%E6%95%B0/" title="函数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">函数</div></div><div class="info-2"><div class="info-item-1">04：函数一、函数的基本概念 函数的概念 函数，即功能。将实现了某个功能的代码，集中起来，通过函数语句进行封装，封装之后，可以选择直接执行或行为 的 代码段。 函数是一种数据类型：function 对象：数据的打包，函数：代码的打包     函数最大的意义：封装功能 函数的特点： 重复使用 选择使用 忽略细节    二、函数的使用 创建函数 声明式：使用function关键字创建函数 function 函数名(){} var 变量名   赋值式：配合变量，赋个函数值，将函数作为一个值或表达式使用 var 变量名 &#x3D; function(){} 将函数作为值使用      123456789// 固定语法：// function 函数名()&#123;&#125;    // function：声明关键字，用来声明函数    // 函数名    // ()：参数，函数的入口    // &#123;&#125;：函数体，内放置要封装的代码function fn()&#123;	console.log(&quot;hello js&quot;);&#125;   使用函数...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/05%EF%BC%9A%E5%AF%B9%E8%B1%A1/" title="对象"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">对象</div></div><div class="info-2"><div class="info-item-1">05：对象一、对象的概念和特点 对象：是一种复杂数据，是数据的打包形式 无序集合，object对象，花括号形式 以键值对的形式存在，键和值一一对应，使用冒号连接，键值对之间使用逗号隔开 键：key，要遵守变量的命名规则，一个对象中不允许出现重复的键 值：value，就是正常数据 使用场景：一般用来打包非同类但属于同一个个体的数据 一个班级中某一个学生的所有信息 姓名，性别，年龄，手机号，住址     有序集合，array对象，中括号形式  数据之间默认以索引的形式，进行标记，索引从0开始，到length-1 使用场景：一般用来打包同类数据  一个班级所有学生的姓名  姓名，姓名，姓名       特点： 提升了数据的查找速度 提升了数据的传输速度   本质：键值对 键和值成对出现，键和值使用冒号连接，键值对之间使用逗号隔开，使用花括号做包裹 &#123;name:&quot;admin&quot;,age:18,sex:&quot;男&quot;&#125;   意义 存储数据 编程（面向对象编程）    二、对象的创建 字面量：var obj = &#123;...</div></div></div></a><a class="pagination-related" href="/2021/07/12/javascript/06%EF%BC%9A%E6%95%B0%E7%BB%84/" title="数组"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-12</div><div class="info-item-2">数组</div></div><div class="info-2"><div class="info-item-1">06：数组一、数组的概念和特点 数组是对象的一种，数组内的数据会按照顺序进行排列，是一种有序集合 数据按照顺序被标记，序号，也叫索引，从0开始 arr[0]   数组拥有length属性，用来表示自身有多少个数据 arr.length   因为索引的规律为从0开始递增，通过length属性标记数据总数，所以可以通过循环语句遍历数组    123for(var i=0; i&lt;arr.length; i++)&#123;  console.log( arr[i] );&#125;  二、数组的创建 字面量：var arr1 = [数据1, 数据2, 数据3, ...]; 创建函数：var arr2 = new Array(数据1, 数据2, 数据3, ...); 区别：当有且只有一个数值型数据时，字面量创建就是作为一个数据，构造函数创建会作为数组的长度，每个位置为undefined  三、数组的操作 索引+长度操作  原生操作，底层操作，所有数组操作功能的基础 查：arr[索引] 改：arr[索引] = &quot;新值&quot; 增：默认只能在数组的最后增加...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">admin</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">一个前端程序员，爱折腾，爱技术分享</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Vue3%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">1. Vue3简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Vue3%E5%AF%B9%E6%AF%94Vue2"><span class="toc-number">2.</span> <span class="toc-text">2. Vue3对比Vue2</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E3%80%90%E6%80%A7%E8%83%BD%E7%9A%84%E6%8F%90%E5%8D%87%E3%80%91"><span class="toc-number">2.1.</span> <span class="toc-text">1.1. 【性能的提升】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E3%80%90-%E6%BA%90%E7%A0%81%E7%9A%84%E5%8D%87%E7%BA%A7%E3%80%91"><span class="toc-number">2.2.</span> <span class="toc-text">1.2.【 源码的升级】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E3%80%90%E6%8B%A5%E6%8A%B1TypeScript%E3%80%91"><span class="toc-number">2.3.</span> <span class="toc-text">1.3. 【拥抱TypeScript】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-%E3%80%90%E6%96%B0%E7%9A%84%E7%89%B9%E6%80%A7%E3%80%91"><span class="toc-number">2.4.</span> <span class="toc-text">1.4. 【新的特性】</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/10/%E5%AE%89%E5%8D%93/%E5%88%A9%E7%94%A8github-Action%E7%BC%96%E8%AF%91%E5%AE%89%E5%8D%93%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8/" title="利用github Action编译安卓内核驱动">利用github Action编译安卓内核驱动</a><time datetime="2024-11-10T04:58:06.000Z" title="发表于 2024-11-10 04:58:06">2024-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/10/vue/%E8%A7%A3%E5%86%B3safari%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8window-open%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/" title="解决safari浏览器使用window.open失效的问题">解决safari浏览器使用window.open失效的问题</a><time datetime="2023-07-10T04:58:06.000Z" title="发表于 2023-07-10 04:58:06">2023-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/02/02/Cloudflare%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89Docker%E9%95%9C%E5%83%8F%E6%BA%90/" title="Cloudflare搭建私有Docker镜像源">Cloudflare搭建私有Docker镜像源</a><time datetime="2023-02-02T04:58:06.000Z" title="发表于 2023-02-02 04:58:06">2023-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/20/docker%E8%AE%B0%E5%BD%95/" title="Docker记录">Docker记录</a><time datetime="2022-06-20T04:58:06.000Z" title="发表于 2022-06-20 04:58:06">2022-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/02/07/vue/vue3%E5%85%B6%E4%BB%96/" title="vue3其他">vue3其他</a><time datetime="2022-02-07T04:58:06.000Z" title="发表于 2022-02-07 04:58:06">2022-02-07</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2025 By admin</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/live2d-widget/autoload.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="255,255,255" opacity="1" zIndex="-1" count="99" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script></div></body></html>

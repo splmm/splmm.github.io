@@ -1,0 +1,432 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>canvas - 下 | 个人博客</title><meta name="author" content="admin"><meta name="copyright" content="admin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="34：canvas - 下一、转换 在canvas内，也可以像css一样有一些类似于css2D转换的效果   位移 语法：ctx.translate(x, y) 注意：一定要在绘制（描边或填充）之前，进行位移   缩放 语法：ctx.scale(x, y) 注意：一定要在绘制（描边或填充）之前，进行缩放   旋转 语法：ctx.rotate(弧度值) 角度转弧度公式：弧度 &#x3D; Math.PI&#x2F;18">
+<meta property="og:type" content="article">
+<meta property="og:title" content="canvas - 下">
+<meta property="og:url" content="https://blog.p0.ee/2021/07/16/javascript/34%EF%BC%9Acanvas-%E4%B8%8B/index.html">
+<meta property="og:site_name" content="个人博客">
+<meta property="og:description" content="34：canvas - 下一、转换 在canvas内，也可以像css一样有一些类似于css2D转换的效果   位移 语法：ctx.translate(x, y) 注意：一定要在绘制（描边或填充）之前，进行位移   缩放 语法：ctx.scale(x, y) 注意：一定要在绘制（描边或填充）之前，进行缩放   旋转 语法：ctx.rotate(弧度值) 角度转弧度公式：弧度 &#x3D; Math.PI&#x2F;18">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.p0.ee/img/Logo.png">
+<meta property="article:published_time" content="2021-07-16T20:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-30T02:51:52.316Z">
+<meta property="article:author" content="admin">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.p0.ee/img/Logo.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "canvas - 下",
+  "url": "https://blog.p0.ee/2021/07/16/javascript/34%EF%BC%9Acanvas-%E4%B8%8B/",
+  "image": "https://blog.p0.ee/img/Logo.png",
+  "datePublished": "2021-07-16T20:00:00.000Z",
+  "dateModified": "2025-10-30T02:51:52.316Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "admin",
+      "url": "https://blog.p0.ee/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/g.jpeg"><link rel="canonical" href="https://blog.p0.ee/2021/07/16/javascript/34%EF%BC%9Acanvas-%E4%B8%8B/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'canvas - 下',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/mycss.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/background.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/Logo.png" alt="Logo"><span class="site-name">个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">canvas - 下</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">canvas - 下</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2021-07-16T20:00:00.000Z" title="发表于 2021-07-16 20:00:00">2021-07-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/JavaScript/">JavaScript</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h1 id="34：canvas-下"><a href="#34：canvas-下" class="headerlink" title="34：canvas - 下"></a>34：canvas - 下</h1><h1 id="一、转换"><a href="#一、转换" class="headerlink" title="一、转换"></a>一、转换</h1><ul>
+<li>在canvas内，也可以像css一样有一些类似于css2D转换的效果</li>
+</ul>
+<ol>
+<li>位移<ul>
+<li>语法：<code>ctx.translate(x, y)</code></li>
+<li>注意：一定要在绘制（描边或填充）之前，进行位移</li>
+</ul>
+</li>
+<li>缩放<ul>
+<li>语法：<code>ctx.scale(x, y)</code></li>
+<li>注意：一定要在绘制（描边或填充）之前，进行缩放</li>
+</ul>
+</li>
+<li>旋转<ul>
+<li>语法：<code>ctx.rotate(弧度值)</code><ul>
+<li>角度转弧度公式：<code>弧度 = Math.PI/180*角度</code></li>
+</ul>
+</li>
+<li>注意：一定要在绘制（描边或填充）之前，进行旋转</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>转换的中心都是画布的 0，0 点，可以配合 位移 修改旋转或缩放的中心</li>
+</ul>
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688912980718-e285d4bf-359a-483d-99f1-ca27988dc1b8-249328.png" alt="1688912980718-e285d4bf-359a-483d-99f1-ca27988dc1b8.png"></p>
+<ol start="4">
+<li>注意：<ul>
+<li>canvas所有的转换操作都不只是在操作某个形状，而是对<strong>整个画布进行转换</strong></li>
+<li>如果需要对多个形状进行不同的转换，在每次绘制之前都需要先保存画笔状态，绘制之后重置画笔状态<ul>
+<li>保存画笔状态：<code>ctx.save();</code><ul>
+<li>一般存在于转换之前</li>
+</ul>
+</li>
+<li>重置画笔状态：<code>ctx.restore();</code><ul>
+<li>一般存在于转换之后</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 绘制两个矩形</span></span><br><span class="line">ctx.<span class="title function_">strokeRect</span>(<span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>);</span><br><span class="line">ctx.<span class="title function_">strokeRect</span>(<span class="number">300</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688912152450-d16ffd5a-6f35-4a42-8899-0b9a6b6166a3-286617.png" alt="1688912152450-d16ffd5a-6f35-4a42-8899-0b9a6b6166a3.png"></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对画布进行旋转</span></span><br><span class="line">ctx.<span class="title function_">rotate</span>(<span class="number">0.5</span>);</span><br><span class="line">ctx.<span class="title function_">strokeRect</span>(<span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>);</span><br><span class="line">ctx.<span class="title function_">strokeRect</span>(<span class="number">300</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688912216377-d71bbdfc-f622-4f63-b920-26370a57be1a-929800.png" alt="1688912216377-d71bbdfc-f622-4f63-b920-26370a57be1a.png"></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将 旋转和其中一个矩形绘制 存储为一次记录</span></span><br><span class="line">ctx.<span class="title function_">save</span>();</span><br><span class="line">ctx.<span class="title function_">rotate</span>(<span class="number">0.5</span>);</span><br><span class="line">ctx.<span class="title function_">strokeRect</span>(<span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>);</span><br><span class="line">ctx.<span class="title function_">restore</span>();</span><br><span class="line"></span><br><span class="line">ctx.<span class="title function_">strokeRect</span>(<span class="number">300</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688912289995-afb06b12-06ba-4d75-9315-26f46011e05f-368524.png" alt="1688912289995-afb06b12-06ba-4d75-9315-26f46011e05f.png"></p>
+<h1 id="二、渐变色"><a href="#二、渐变色" class="headerlink" title="二、渐变色"></a>二、渐变色</h1><ol>
+<li>canvas的渐变色，就是提前配置好渐变色方案（从颜色1向颜色2过渡），然后将渐变色方案，设置给填充样式即可</li>
+<li>渐变形式<ul>
+<li>线性渐变<ul>
+<li>创建渐变：<code>const lg = ctx.createLinearGradient(起点x坐标, 起点y坐标, 终点x坐标, 终点y坐标)</code><ul>
+<li>指定渐变范围</li>
+</ul>
+</li>
+<li>添加渐变色：<code>lg.addColorStop(0, &#39;red&#39;)</code><ul>
+<li>向指定位置添加颜色，0表示开始坐标，1表示结束坐标，中间部分会自动填充渐变色</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> canvas = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.mycanvas&quot;</span>);</span><br><span class="line"></span><br><span class="line">canvas.<span class="property">width</span> = <span class="number">800</span>;</span><br><span class="line">canvas.<span class="property">height</span> = <span class="number">400</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> lg = ctx.<span class="title function_">createLinearGradient</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">800</span>, <span class="number">400</span>);</span><br><span class="line"></span><br><span class="line">lg.<span class="title function_">addColorStop</span>(<span class="number">0</span>, <span class="string">&#x27;red&#x27;</span>);</span><br><span class="line">lg.<span class="title function_">addColorStop</span>(<span class="number">1</span>, <span class="string">&#x27;green&#x27;</span>);</span><br><span class="line"></span><br><span class="line">ctx.<span class="property">fillStyle</span> = lg;</span><br><span class="line">ctx.<span class="title function_">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">800</span>, <span class="number">400</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688914058322-229bb0f5-9341-472b-a826-510da597bf94-243799.png" alt="1688914058322-229bb0f5-9341-472b-a826-510da597bf94.png"></p>
+<pre><code>- 径向渐变
+    * 创建渐变：`const lg = ctx.createRadialGradient(x1, y1, r1, x2, y2, r2);`
+        + &lt;font style=&quot;color:#333333;&quot;&gt;x1：起始圆圆心 x 轴坐标&lt;/font&gt;
+        + &lt;font style=&quot;color:#333333;&quot;&gt;y1：起始圆圆心 y 轴坐标&lt;/font&gt;
+        + &lt;font style=&quot;color:#333333;&quot;&gt;r1：起始圆半径&lt;/font&gt;
+        + &lt;font style=&quot;color:#333333;&quot;&gt;x2：终止圆圆心 x 轴坐标&lt;/font&gt;
+        + &lt;font style=&quot;color:#333333;&quot;&gt;y2：终止圆圆心 y 轴坐标&lt;/font&gt;
+        + &lt;font style=&quot;color:#333333;&quot;&gt;r2：终止圆半径&lt;/font&gt;
+    * 添加渐变色：`lg.addColorStop(0, &#39;red&#39;)`
+        + 同线性渐变
+</code></pre>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> canvas = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.mycanvas&quot;</span>);</span><br><span class="line"></span><br><span class="line">canvas.<span class="property">width</span> = <span class="number">800</span>;</span><br><span class="line">canvas.<span class="property">height</span> = <span class="number">400</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> lg = ctx.<span class="title function_">createRadialGradient</span>(<span class="number">200</span>, <span class="number">200</span>, <span class="number">50</span>, <span class="number">200</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line">lg.<span class="title function_">addColorStop</span>(<span class="number">0</span>, <span class="string">&#x27;red&#x27;</span>);</span><br><span class="line">lg.<span class="title function_">addColorStop</span>(<span class="number">1</span>, <span class="string">&#x27;green&#x27;</span>);</span><br><span class="line"></span><br><span class="line">ctx.<span class="property">fillStyle</span> = lg;</span><br><span class="line">ctx.<span class="title function_">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">800</span>, <span class="number">400</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688914439313-f0cb19ae-8009-4979-8a26-6fb3bdc73d73-128856.png" alt="1688914439313-f0cb19ae-8009-4979-8a26-6fb3bdc73d73.png"></p>
+<ol start="3">
+<li>多区域不同渐变<ul>
+<li>本质为配置多套渐变方案，绘制到不同的形状</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> canvas = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.mycanvas&quot;</span>);</span><br><span class="line"></span><br><span class="line">canvas.<span class="property">width</span> = <span class="number">800</span>;</span><br><span class="line">canvas.<span class="property">height</span> = <span class="number">400</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rg = ctx.<span class="title function_">createRadialGradient</span>(<span class="number">200</span>, <span class="number">200</span>, <span class="number">50</span>, <span class="number">200</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line">rg.<span class="title function_">addColorStop</span>(<span class="number">0</span>, <span class="string">&#x27;red&#x27;</span>);</span><br><span class="line">rg.<span class="title function_">addColorStop</span>(<span class="number">1</span>, <span class="string">&#x27;green&#x27;</span>);</span><br><span class="line"></span><br><span class="line">ctx.<span class="property">fillStyle</span> = rg;</span><br><span class="line">ctx.<span class="title function_">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">400</span>, <span class="number">400</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> lg = ctx.<span class="title function_">createLinearGradient</span>(<span class="number">400</span>, <span class="number">0</span>, <span class="number">800</span>, <span class="number">0</span>);</span><br><span class="line">lg.<span class="title function_">addColorStop</span>(<span class="number">0</span>, <span class="string">&#x27;blue&#x27;</span>);</span><br><span class="line">lg.<span class="title function_">addColorStop</span>(<span class="number">1</span>, <span class="string">&#x27;yellow&#x27;</span>);</span><br><span class="line">ctx.<span class="property">fillStyle</span> = lg;</span><br><span class="line">ctx.<span class="title function_">fillRect</span>(<span class="number">400</span>, <span class="number">0</span>, <span class="number">400</span>, <span class="number">400</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688915008415-957d0f07-3a95-48fd-a5cd-4186c3c47ea2-890485.png" alt="1688915008415-957d0f07-3a95-48fd-a5cd-4186c3c47ea2.png"></p>
+<h1 id="三、贝塞尔曲线"><a href="#三、贝塞尔曲线" class="headerlink" title="三、贝塞尔曲线"></a>三、贝塞尔曲线</h1><ul>
+<li>贝塞尔曲线（Bezier curve）是计算机图形学中相当重要的参数曲线，它通过一个方程来描述一条曲线，根据方程的最高阶数，又分为线性贝赛尔曲线，二次贝塞尔曲线、三次贝塞尔曲线和更高阶的贝塞尔曲线。<ul>
+<li>贝塞尔曲线需要提供几个点的参数，首先是 曲线的起点和终点</li>
+<li>如果控制点数量为 0，我们称之为线性贝塞尔；</li>
+<li>控制点数量为 1，则为二阶贝塞尔曲线；</li>
+<li>控制点数量为 2，则为三阶贝塞尔曲线，依此类推。</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>二阶贝塞尔曲线<ul>
+<li>其实就是由 三个点 绘制成两个直线</li>
+<li>然后同时从每条直线的起点开始，向终点移动，按比例拿到点。然后将这些点再连接，产生 n - 1 条直线。</li>
+<li>就这样，我们继续同样的操作的，直到变成一条直线，然后再按比例取到一个点，这个点就是曲线经过的点。</li>
+<li>当我们比例一点点变大（从 0 到 1），就拿到了曲线中间的所有点，最终绘制出完整的曲线。</li>
+</ul>
+</li>
+</ol>
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1689010509569-0a0a06fa-5c4b-497f-b67c-bf5cc37c8a68-415868.gif" alt="1689010509569-0a0a06fa-5c4b-497f-b67c-bf5cc37c8a68.gif"></p>
+<ol start="2">
+<li>再来看看三阶贝塞尔曲线<ul>
+<li>和二阶贝塞尔曲线是一个道理，只不过控制点数量变成了两个</li>
+</ul>
+</li>
+</ol>
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1689010509565-02b3d8f8-e762-47c1-b9f7-1c0d1e54a9a3-468577.gif" alt="1689010509565-02b3d8f8-e762-47c1-b9f7-1c0d1e54a9a3.gif"></p>
+<ol start="3">
+<li>在canvas中不需要我们手动计算这么多点，canvas直接提供了相关的API<ul>
+<li>二阶贝塞尔曲线：<code>ctx.quadraticCurveTo(p1x, p1y, p2x, p2y)</code></li>
+<li>三阶贝塞尔曲线：<code>ctx.bezierCurveTo(p1x, p1y, p2x, p2y, p3x, p3y)</code></li>
+<li>在此之前需要先使用 moveTo 确定 p0 的位置</li>
+</ul>
+</li>
+</ol>
+<p><strong>二阶</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cvs = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.cvs&quot;</span>);</span><br><span class="line">cvs.<span class="property">width</span> = <span class="number">400</span>;</span><br><span class="line">cvs.<span class="property">height</span> = <span class="number">400</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ctx = cvs.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"></span><br><span class="line">ctx.<span class="title function_">beginPath</span>();</span><br><span class="line">ctx.<span class="title function_">moveTo</span>(<span class="number">100</span>, <span class="number">100</span>);</span><br><span class="line">ctx.<span class="title function_">quadraticCurveTo</span>(<span class="number">300</span>, <span class="number">200</span>, <span class="number">200</span>, <span class="number">300</span>);</span><br><span class="line">ctx.<span class="title function_">stroke</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1689011555165-4be5506d-9a47-46f7-90bd-503bdeeaa1b2-166182.png" alt="1689011555165-4be5506d-9a47-46f7-90bd-503bdeeaa1b2.png"></p>
+<p><strong>三阶</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cvs = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.cvs&quot;</span>);</span><br><span class="line">cvs.<span class="property">width</span> = <span class="number">400</span>;</span><br><span class="line">cvs.<span class="property">height</span> = <span class="number">400</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ctx = cvs.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"></span><br><span class="line">ctx.<span class="title function_">beginPath</span>();</span><br><span class="line">ctx.<span class="title function_">moveTo</span>(<span class="number">100</span>, <span class="number">100</span>);</span><br><span class="line">ctx.<span class="title function_">bezierCurveTo</span>(<span class="number">60</span>, <span class="number">80</span>, <span class="number">150</span>, <span class="number">30</span>, <span class="number">170</span>, <span class="number">150</span>);</span><br><span class="line">ctx.<span class="title function_">stroke</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1689011610731-ce6dc189-3538-4ae3-91f0-70043d992ed4-619886.png" alt="1689011610731-ce6dc189-3538-4ae3-91f0-70043d992ed4.png"></p>
+<p><strong>多阶</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ctx.<span class="title function_">beginPath</span>();</span><br><span class="line">ctx.<span class="title function_">moveTo</span>(<span class="number">75</span>, <span class="number">25</span>);</span><br><span class="line">ctx.<span class="title function_">quadraticCurveTo</span>(<span class="number">25</span>, <span class="number">25</span>, <span class="number">25</span>, <span class="number">62.5</span>);</span><br><span class="line">ctx.<span class="title function_">quadraticCurveTo</span>(<span class="number">25</span>, <span class="number">100</span>, <span class="number">50</span>, <span class="number">100</span>);</span><br><span class="line">ctx.<span class="title function_">quadraticCurveTo</span>(<span class="number">50</span>, <span class="number">120</span>, <span class="number">30</span>, <span class="number">125</span>);</span><br><span class="line">ctx.<span class="title function_">quadraticCurveTo</span>(<span class="number">60</span>, <span class="number">120</span>, <span class="number">65</span>, <span class="number">100</span>);</span><br><span class="line">ctx.<span class="title function_">quadraticCurveTo</span>(<span class="number">125</span>, <span class="number">100</span>, <span class="number">125</span>, <span class="number">62.5</span>);</span><br><span class="line">ctx.<span class="title function_">quadraticCurveTo</span>(<span class="number">125</span>, <span class="number">25</span>, <span class="number">75</span>, <span class="number">25</span>);</span><br><span class="line">ctx.<span class="title function_">stroke</span>();</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ctx.<span class="title function_">moveTo</span>(<span class="number">75</span>, <span class="number">40</span>);</span><br><span class="line">ctx.<span class="title function_">bezierCurveTo</span>(<span class="number">75</span>, <span class="number">37</span>, <span class="number">70</span>, <span class="number">25</span>, <span class="number">50</span>, <span class="number">25</span>);</span><br><span class="line">ctx.<span class="title function_">bezierCurveTo</span>(<span class="number">20</span>, <span class="number">25</span>, <span class="number">20</span>, <span class="number">62.5</span>, <span class="number">20</span>, <span class="number">62.5</span>);</span><br><span class="line">ctx.<span class="title function_">bezierCurveTo</span>(<span class="number">20</span>, <span class="number">80</span>, <span class="number">40</span>, <span class="number">102</span>, <span class="number">75</span>, <span class="number">120</span>);</span><br><span class="line">ctx.<span class="title function_">bezierCurveTo</span>(<span class="number">110</span>, <span class="number">102</span>, <span class="number">130</span>, <span class="number">80</span>, <span class="number">130</span>, <span class="number">62.5</span>);</span><br><span class="line">ctx.<span class="title function_">bezierCurveTo</span>(<span class="number">130</span>, <span class="number">62.5</span>, <span class="number">130</span>, <span class="number">25</span>, <span class="number">100</span>, <span class="number">25</span>);</span><br><span class="line">ctx.<span class="title function_">bezierCurveTo</span>(<span class="number">85</span>, <span class="number">25</span>, <span class="number">75</span>, <span class="number">37</span>, <span class="number">75</span>, <span class="number">40</span>);</span><br><span class="line">ctx.<span class="title function_">fill</span>();</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="四、绘制图片"><a href="#四、绘制图片" class="headerlink" title="四、绘制图片"></a>四、绘制图片</h1><ol>
+<li>创建图片（非canvas操作）<ul>
+<li>创建图片对象：<code>const img = new Image();</code></li>
+<li>设置资源地址：<code>img.src = &quot;图片地址&quot;</code></li>
+<li>资源加载完成：<code>img.onload = function()&#123; / * 图片加载完成 */  &#125;</code></li>
+</ul>
+</li>
+<li>将图片绘制到canvas<ul>
+<li>三个参数：<code>gd.drawImage(图片对象, x, y)</code><ul>
+<li>从画布的 x，y 坐标开始绘制</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> canvas = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.mycanvas&quot;</span>);</span><br><span class="line"></span><br><span class="line">canvas.<span class="property">width</span> = <span class="number">800</span>;</span><br><span class="line">canvas.<span class="property">height</span> = <span class="number">400</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> img = <span class="keyword">new</span> <span class="title class_">Image</span>();</span><br><span class="line">img.<span class="property">src</span> = <span class="string">&quot;../1.png&quot;</span>;</span><br><span class="line"></span><br><span class="line">img.<span class="property">onload</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  ctx.<span class="title function_">drawImage</span>(<span class="variable language_">this</span>, <span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688915909504-dc331fce-259d-4715-ad81-89c6fb4eb997-477729.png" alt="1688915909504-dc331fce-259d-4715-ad81-89c6fb4eb997.png"></p>
+<pre><code>- 五个参数：`gd.drawImage(图片对象, x, y, w, h)`
+    * 从画布的 x，y 坐标开始绘制，绘制到 宽w，高h 的区域
+</code></pre>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> canvas = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.mycanvas&quot;</span>);</span><br><span class="line"></span><br><span class="line">canvas.<span class="property">width</span> = <span class="number">800</span>;</span><br><span class="line">canvas.<span class="property">height</span> = <span class="number">400</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> img = <span class="keyword">new</span> <span class="title class_">Image</span>();</span><br><span class="line">img.<span class="property">src</span> = <span class="string">&quot;../1.png&quot;</span>;</span><br><span class="line"></span><br><span class="line">img.<span class="property">onload</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  ctx.<span class="title function_">drawImage</span>(<span class="variable language_">this</span>, <span class="number">0</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="number">200</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688915942823-93682cf3-6fed-46eb-89ed-d2f20414c170-690417.png" alt="1688915942823-93682cf3-6fed-46eb-89ed-d2f20414c170.png"></p>
+<pre><code>- 九个参数：`gd.drawImage(图片对象, sx, sy, sw, sh, dx, dy, dw, dh)`
+    * s = source 原图    位置 宽高
+    * d = destination 目标（画布）画在哪，画多大
+</code></pre>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> canvas = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.mycanvas&quot;</span>);</span><br><span class="line"></span><br><span class="line">canvas.<span class="property">width</span> = <span class="number">800</span>;</span><br><span class="line">canvas.<span class="property">height</span> = <span class="number">400</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> img = <span class="keyword">new</span> <span class="title class_">Image</span>();</span><br><span class="line">img.<span class="property">src</span> = <span class="string">&quot;../1.png&quot;</span>;</span><br><span class="line"><span class="comment">// 图片资源宽高</span></span><br><span class="line"><span class="keyword">const</span> imgW = <span class="number">128</span>;</span><br><span class="line"><span class="keyword">const</span> imgH = <span class="number">194</span>;</span><br><span class="line">img.<span class="property">width</span> = <span class="number">128</span>;</span><br><span class="line">img.<span class="property">height</span> = <span class="number">194</span>;</span><br><span class="line"></span><br><span class="line">img.<span class="property">onload</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  ctx.<span class="title function_">drawImage</span>(<span class="variable language_">this</span>, <span class="number">0</span>, <span class="number">0</span>, imgW/<span class="number">4</span>, imgH/<span class="number">4</span>, <span class="number">0</span>, <span class="number">100</span>, imgW/<span class="number">4</span>, imgH/<span class="number">4</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./img/k_IlbS3L5K1yWmgE/1688916025413-f803056a-d7ac-4954-bc6d-e6d61020344a-470262.png" alt="1688916025413-f803056a-d7ac-4954-bc6d-e6d61020344a.png"></p>
+<h1 id="五、事件"><a href="#五、事件" class="headerlink" title="五、事件"></a>五、事件</h1><ol>
+<li>canvas内没有事件系统，只能通过给canvas元素添加事件，配合事件对象，手动检测事件区域</li>
+<li>矩形检测公式：<ul>
+<li><code>点击x &gt; 矩形x &amp;&amp; 点击x &lt; 矩形x + 矩形w &amp;&amp; 点击y &gt; 矩形y &amp;&amp; 点击y &lt; 矩形y + 矩形h</code></li>
+</ul>
+</li>
+<li>圆形检测公式：<ul>
+<li>利用勾股定理：a^2 + b^2 &#x3D; c^2</li>
+<li>a &#x3D; 圆心x - 点击x</li>
+<li>b &#x3D; 圆心y - 点击y</li>
+<li>c &#x3D; Math.sqrt( a * a + b * b )</li>
+<li>若 c &lt; r ，则在圆形区域内</li>
+</ul>
+</li>
+<li>自动检测<ul>
+<li><code>ctx.isPointInPath(x, y)</code></li>
+<li>返回值：布尔值，表示指定坐标是否在一个路径范围内</li>
+</ul>
+</li>
+</ol>
+<h1 id="六、导出（了解）"><a href="#六、导出（了解）" class="headerlink" title="六、导出（了解）"></a>六、导出（了解）</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">download.<span class="property">onclick</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="comment">// 将canvas数据转成base64数据</span></span><br><span class="line">  <span class="keyword">const</span> base64 = canvas.<span class="title function_">toDataURL</span>(<span class="string">&quot;image/png&quot;</span>);</span><br><span class="line">  <span class="comment">// 将base64数据解码</span></span><br><span class="line">  <span class="keyword">const</span> strBase64 = <span class="title function_">atob</span>( base64.<span class="title function_">split</span>(<span class="string">&quot;,&quot;</span>)[<span class="number">1</span>] );</span><br><span class="line">  <span class="comment">// 创建utf-8原始数据（长度为base64解码后的字符长度）</span></span><br><span class="line">  <span class="keyword">const</span> utf_8 = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(strBase64.<span class="property">length</span>);</span><br><span class="line">  <span class="comment">// 将base64解码后的数据转成Unicode编码后，存入utf-8数组</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> n=<span class="number">0</span>;n&lt;strBase64.<span class="property">length</span>;n++)&#123;</span><br><span class="line">    utf_8[n] = strBase64.<span class="title function_">charCodeAt</span>(n)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 根据utf-8数据，创建文件对象</span></span><br><span class="line">  <span class="keyword">const</span> file = <span class="keyword">new</span> <span class="title class_">File</span>([utf_8], <span class="string">&quot;测试图片&quot;</span>, &#123;<span class="attr">type</span>:<span class="string">&quot;image/png&quot;</span>&#125;);</span><br><span class="line">  <span class="comment">// 根据文件对象创建url字符</span></span><br><span class="line">  <span class="keyword">const</span> href = <span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(file);</span><br><span class="line">  <span class="comment">// 准备a标签，用于下载文件</span></span><br><span class="line">  <span class="keyword">const</span> a = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&quot;a&quot;</span>);</span><br><span class="line">  a.<span class="property">href</span> = href;</span><br><span class="line">  a.<span class="property">download</span> = <span class="string">&quot;测试图片&quot;</span>;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(a);</span><br><span class="line">  a.<span class="title function_">click</span>();</span><br><span class="line">  <span class="comment">// 删除a标签</span></span><br><span class="line">  a.<span class="title function_">remove</span>();</span><br><span class="line">  <span class="comment">// 释放指向文件资源的url字符</span></span><br><span class="line">  <span class="variable constant_">URL</span>.<span class="title function_">revokeObjectURL</span>(href);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="七、总结"><a href="#七、总结" class="headerlink" title="七、总结"></a>七、总结</h1><ul>
+<li>位移：<code>ctx.translate(x, y)</code></li>
+<li>旋转：<code>ctx.rotate(弧度值)</code></li>
+<li>缩放：<code>ctx.scale(x, y)</code></li>
+<li>保存画笔状态：<code>ctx.save()</code></li>
+<li>重置画笔状态：<code>ctx.restore()</code></li>
+<li>创建线性渐变：<code>const lg = ctx.createLinearGradient(起点x坐标, 起点y坐标, 终点x坐标, 终点y坐标)</code></li>
+<li>创建径向渐变：<code>const lg = ctx.createRadialGradient(x1, y1, r1, x2, y2, r2);</code></li>
+<li>添加渐变色：<code>lg.addColorStop(0, &#39;red&#39;)</code></li>
+<li>绘制图片：<code>gd.drawImage(图片对象, x, y)</code></li>
+<li>检测指定坐标是否在某个路径范围内：<code>ctx.isPointInPath(x, y)</code></li>
+</ul>
+<h1 id="八、拓展-requestAnimationFrame"><a href="#八、拓展-requestAnimationFrame" class="headerlink" title="八、拓展 - requestAnimationFrame"></a>八、拓展 - <font style="color:rgb(34, 34, 38);">requestAnimationFrame</font></h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_41636483/article/details/112622364?spm=1001.2014.3001.5501">requestAnimationFrame</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.p0.ee">admin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.p0.ee/2021/07/16/javascript/34%EF%BC%9Acanvas-%E4%B8%8B/">https://blog.p0.ee/2021/07/16/javascript/34%EF%BC%9Acanvas-%E4%B8%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.p0.ee" target="_blank"></a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a></div><div class="post-share"><div class="social-share" data-image="/img/Logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2021/07/16/javascript/33%EF%BC%9Acanvas-%E4%B8%8A/" title="canvas - 上"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">canvas - 上</div></div><div class="info-2"><div class="info-item-1">33：canvas - 上一、介绍 canvas 是 HTML5 新增的一个标签，表示画布 &lt;canvas&gt;&lt;/canvas&gt;   canvas 也是 HTML5 的画布技术，可以通过编码的方式在画布上描绘图像  12345678&lt;html&gt;  &lt;head&gt;    ...  &lt;/head&gt;  &lt;body&gt;    &lt;canvas&gt;&lt;/canvas&gt;  &lt;/body&gt;&lt;/html&gt;  - canvas 默认是一个行内块元素 - canvas 默认画布大小是 300 * 150  - canvas 默认没有边框, 背景默认为无色透明  1.1 canvas 画布大小 在绘图之前, 先要确定一个画布的大小 因为画布默认是按照比例调整 所以我们调整宽度或者高度的时候, 调整一个, 另一个自然会按照比例自己调整 我们也可以宽高一起调整   调整画布大小有两种方案 第一种 : 通过 css 样式 ( 不推荐 ) 第二种 : 通过标签属性 ( 推荐 ) &lt;canvas...</div></div></div></a><a class="pagination-related" href="/2021/07/17/javascript/%E6%8B%93%E5%B1%95%EF%BC%9ANode%E5%86%85%E7%BD%AE%E6%A8%A1%E5%9D%97/" title="Node内置模块"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Node内置模块</div></div><div class="info-2"><div class="info-item-1">拓展：Node内置模块1. http模块 可以实现搭建服务器，请求数据等功能   引入模块：const http = require(&#39;http&#39;); 创建服务：  const server = http.createServer((request, response)=&gt;&#123;&#125;);  &#x2F;&#x2F; 返回http对象  require：请求：浏览器 -&gt; 服务器  req.url地址，提取地址栏数据 req.on(&#39;data|end&#39;);提取非地址栏数据，所有的http[s]都会触发data事件和end事件   response：响应：服务器 -&gt; 浏览器  响应头设置：res.writeHead(200,&#123;&#39;Content-Type&#39;:&#39;text/html;charset=utf-8&#39;&#125;); res.write(字符/数据&lt;string&gt;&lt;buffer&gt;); res.end(); 结束响应       监听：...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2021/07/10/javascript/01%EF%BC%9AJS%E5%9F%BA%E7%A1%80/" title="JS基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">JS基础</div></div><div class="info-2"><div class="info-item-1">01：JS基础一、JavaScript 介绍 网页的组成：结构html，样式css，行为js  html：超文本标记语言 css：层叠样式表 javascript：网页的脚本语言，用来描述网页的逻辑交互行为 是一种基于对象和事件驱动并具有相对安全性的客户端脚本语言。同时也是一种广泛用于客户端Web开发的脚本语言，常用来给HTML网页添加动态功能，比如响应用户的各种操作。     javascript的组成：ECMAScript，DOM，BOM  ECMAScript：语法，规范，标准，定义了javascript的语法规范,描述了语言的基本语法和数据类型。 用来约束代码用什么样的格式书写，写什么，如何执行   DOM（Document Object Model）：文档对象模型，document，表示网页。 提供了网页的相关操作，标准化组织是W3C。 有一套成熟的可以操作页面元素的 API，通过 DOM 可以操作页面中的元素。 如：增加元素，删除元素，改变元素位置等     BOM（Browser Object...</div></div></div></a><a class="pagination-related" href="/2021/07/10/javascript/02%EF%BC%9A%E5%88%86%E6%94%AF/" title="分支"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">分支</div></div><div class="info-2"><div class="info-item-1">02：分支一、程序结构 顺序结构：默认的程序执行顺序，从上到下依次执行 分支结构：根据程序执行过程中可能产生的不同信息，决定执行不同的功能 配合分支语句   循环结构：根据执行条件重复执行某个功能 配合循环语句    二、分支语句 单分支：if()&#123;&#125; 根据条件决定执行或不执行    123456789101112// if()&#123;&#125;//     if      语句名，关键字//     ()      执行条件//     &#123;&#125;      执行条件符合时（true），要执行的代码console.log(1);if( true )&#123;    console.log(&quot;hello&quot;);&#125;console.log(2);   双分支：if(){}else{} 根据条件决定执行A或执行B    12345678910111213141516// if()&#123;&#125;else&#123;&#125;    // if      语句名1，关键字    // ()     ...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/03%EF%BC%9A%E5%BE%AA%E7%8E%AF/" title="循环"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">循环</div></div><div class="info-2"><div class="info-item-1">03：循环一、循环结构介绍 循环结构存在的意义  计算1+2+3+……+1000的和 需要向计算机输入重复的命令 节省向计算机输入命令的时间，并没有提升性能   循环结构的三要素  创建（初始化）计数器 执行条件 计数器的改变   死循环：无法通过自身控制结束的循环  瞬间占用大量性能，造成计算机死机，程序崩溃 尽量避免产生死循环 但可以利用死循环解决无法确定重复执行次数的问题    二、循环语句 while 循环语句  1234567891011// while()&#123;&#125;    // while       语句名，关键字    // ()          执行条件    // &#123;&#125;          当执行条件为true时，要重复执行的语句// 打印10次hellovar i = 0;while(i &lt; 10)&#123;    console.log(&quot;hello&quot;);    i++;&#125;   do...while 循环语句  123456789101112//...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/04%EF%BC%9A%E5%87%BD%E6%95%B0/" title="函数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">函数</div></div><div class="info-2"><div class="info-item-1">04：函数一、函数的基本概念 函数的概念 函数，即功能。将实现了某个功能的代码，集中起来，通过函数语句进行封装，封装之后，可以选择直接执行或行为 的 代码段。 函数是一种数据类型：function 对象：数据的打包，函数：代码的打包     函数最大的意义：封装功能 函数的特点： 重复使用 选择使用 忽略细节    二、函数的使用 创建函数 声明式：使用function关键字创建函数 function 函数名(){} var 变量名   赋值式：配合变量，赋个函数值，将函数作为一个值或表达式使用 var 变量名 &#x3D; function(){} 将函数作为值使用      123456789// 固定语法：// function 函数名()&#123;&#125;    // function：声明关键字，用来声明函数    // 函数名    // ()：参数，函数的入口    // &#123;&#125;：函数体，内放置要封装的代码function fn()&#123;	console.log(&quot;hello js&quot;);&#125;   使用函数...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/05%EF%BC%9A%E5%AF%B9%E8%B1%A1/" title="对象"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">对象</div></div><div class="info-2"><div class="info-item-1">05：对象一、对象的概念和特点 对象：是一种复杂数据，是数据的打包形式 无序集合，object对象，花括号形式 以键值对的形式存在，键和值一一对应，使用冒号连接，键值对之间使用逗号隔开 键：key，要遵守变量的命名规则，一个对象中不允许出现重复的键 值：value，就是正常数据 使用场景：一般用来打包非同类但属于同一个个体的数据 一个班级中某一个学生的所有信息 姓名，性别，年龄，手机号，住址     有序集合，array对象，中括号形式  数据之间默认以索引的形式，进行标记，索引从0开始，到length-1 使用场景：一般用来打包同类数据  一个班级所有学生的姓名  姓名，姓名，姓名       特点： 提升了数据的查找速度 提升了数据的传输速度   本质：键值对 键和值成对出现，键和值使用冒号连接，键值对之间使用逗号隔开，使用花括号做包裹 &#123;name:&quot;admin&quot;,age:18,sex:&quot;男&quot;&#125;   意义 存储数据 编程（面向对象编程）    二、对象的创建 字面量：var obj = &#123;...</div></div></div></a><a class="pagination-related" href="/2021/07/12/javascript/06%EF%BC%9A%E6%95%B0%E7%BB%84/" title="数组"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-12</div><div class="info-item-2">数组</div></div><div class="info-2"><div class="info-item-1">06：数组一、数组的概念和特点 数组是对象的一种，数组内的数据会按照顺序进行排列，是一种有序集合 数据按照顺序被标记，序号，也叫索引，从0开始 arr[0]   数组拥有length属性，用来表示自身有多少个数据 arr.length   因为索引的规律为从0开始递增，通过length属性标记数据总数，所以可以通过循环语句遍历数组    123for(var i=0; i&lt;arr.length; i++)&#123;  console.log( arr[i] );&#125;  二、数组的创建 字面量：var arr1 = [数据1, 数据2, 数据3, ...]; 创建函数：var arr2 = new Array(数据1, 数据2, 数据3, ...); 区别：当有且只有一个数值型数据时，字面量创建就是作为一个数据，构造函数创建会作为数组的长度，每个位置为undefined  三、数组的操作 索引+长度操作  原生操作，底层操作，所有数组操作功能的基础 查：arr[索引] 改：arr[索引] = &quot;新值&quot; 增：默认只能在数组的最后增加...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">admin</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">一个前端程序员，爱折腾，爱技术分享</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#34%EF%BC%9Acanvas-%E4%B8%8B"><span class="toc-number">1.</span> <span class="toc-text">34：canvas - 下</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E8%BD%AC%E6%8D%A2"><span class="toc-number">2.</span> <span class="toc-text">一、转换</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%B8%90%E5%8F%98%E8%89%B2"><span class="toc-number">3.</span> <span class="toc-text">二、渐变色</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF"><span class="toc-number">4.</span> <span class="toc-text">三、贝塞尔曲线</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E7%BB%98%E5%88%B6%E5%9B%BE%E7%89%87"><span class="toc-number">5.</span> <span class="toc-text">四、绘制图片</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-number">6.</span> <span class="toc-text">五、事件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%AF%BC%E5%87%BA%EF%BC%88%E4%BA%86%E8%A7%A3%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">六、导出（了解）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">七、总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%8B%93%E5%B1%95-requestAnimationFrame"><span class="toc-number">9.</span> <span class="toc-text">八、拓展 - requestAnimationFrame</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/10/%E5%AE%89%E5%8D%93/%E5%88%A9%E7%94%A8github-Action%E7%BC%96%E8%AF%91%E5%AE%89%E5%8D%93%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8/" title="利用github Action编译安卓内核驱动">利用github Action编译安卓内核驱动</a><time datetime="2024-11-10T04:58:06.000Z" title="发表于 2024-11-10 04:58:06">2024-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/10/vue/%E8%A7%A3%E5%86%B3safari%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8window-open%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/" title="解决safari浏览器使用window.open失效的问题">解决safari浏览器使用window.open失效的问题</a><time datetime="2023-07-10T04:58:06.000Z" title="发表于 2023-07-10 04:58:06">2023-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/02/02/Cloudflare%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89Docker%E9%95%9C%E5%83%8F%E6%BA%90/" title="Cloudflare搭建私有Docker镜像源">Cloudflare搭建私有Docker镜像源</a><time datetime="2023-02-02T04:58:06.000Z" title="发表于 2023-02-02 04:58:06">2023-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/20/docker%E8%AE%B0%E5%BD%95/" title="Docker记录">Docker记录</a><time datetime="2022-06-20T04:58:06.000Z" title="发表于 2022-06-20 04:58:06">2022-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/02/07/vue/vue3%E5%85%B6%E4%BB%96/" title="vue3其他">vue3其他</a><time datetime="2022-02-07T04:58:06.000Z" title="发表于 2022-02-07 04:58:06">2022-02-07</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2025 By admin</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/live2d-widget/autoload.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="255,255,255" opacity="1" zIndex="-1" count="99" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script></div></body></html>

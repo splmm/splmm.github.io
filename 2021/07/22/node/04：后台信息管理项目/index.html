@@ -1,0 +1,510 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>后台信息管理项目 | 个人博客</title><meta name="author" content="admin"><meta name="copyright" content="admin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="04：后台信息管理项目一、数据管理后台1. AdminLTE模版的介绍AdminLTE模版基于bootstrap，拥有最佳开源管理仪表板和控制面板主题。AdminLTE建立在引导之上，提供了一系列响应性强、可重用和常用的组件。 其中 starter.html 是 AdminLTE 建议用来作为起点的参考示例。build 目录包含未编译的 CSS、JS 文件；dist 目录包含经过编译的 CSS、J">
+<meta property="og:type" content="article">
+<meta property="og:title" content="后台信息管理项目">
+<meta property="og:url" content="https://blog.p0.ee/2021/07/22/node/04%EF%BC%9A%E5%90%8E%E5%8F%B0%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE/index.html">
+<meta property="og:site_name" content="个人博客">
+<meta property="og:description" content="04：后台信息管理项目一、数据管理后台1. AdminLTE模版的介绍AdminLTE模版基于bootstrap，拥有最佳开源管理仪表板和控制面板主题。AdminLTE建立在引导之上，提供了一系列响应性强、可重用和常用的组件。 其中 starter.html 是 AdminLTE 建议用来作为起点的参考示例。build 目录包含未编译的 CSS、JS 文件；dist 目录包含经过编译的 CSS、J">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.p0.ee/img/Logo.png">
+<meta property="article:published_time" content="2021-07-22T20:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-30T02:51:52.316Z">
+<meta property="article:author" content="admin">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.p0.ee/img/Logo.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "后台信息管理项目",
+  "url": "https://blog.p0.ee/2021/07/22/node/04%EF%BC%9A%E5%90%8E%E5%8F%B0%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE/",
+  "image": "https://blog.p0.ee/img/Logo.png",
+  "datePublished": "2021-07-22T20:00:00.000Z",
+  "dateModified": "2025-10-30T02:51:52.316Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "admin",
+      "url": "https://blog.p0.ee/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/g.jpeg"><link rel="canonical" href="https://blog.p0.ee/2021/07/22/node/04%EF%BC%9A%E5%90%8E%E5%8F%B0%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '后台信息管理项目',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/mycss.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/background.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/Logo.png" alt="Logo"><span class="site-name">个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">后台信息管理项目</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">后台信息管理项目</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2021-07-22T20:00:00.000Z" title="发表于 2021-07-22 20:00:00">2021-07-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Node/">Node</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h1 id="04：后台信息管理项目"><a href="#04：后台信息管理项目" class="headerlink" title="04：后台信息管理项目"></a>04：后台信息管理项目</h1><h1 id="一、数据管理后台"><a href="#一、数据管理后台" class="headerlink" title="一、数据管理后台"></a>一、数据管理后台</h1><h3 id="1-AdminLTE模版的介绍"><a href="#1-AdminLTE模版的介绍" class="headerlink" title="1. AdminLTE模版的介绍"></a>1. AdminLTE模版的介绍</h3><p>AdminLTE模版基于bootstrap，拥有最佳开源管理仪表板和控制面板主题。AdminLTE建立在引导之上，提供了一系列响应性强、可重用和常用的组件。</p>
+<p>其中 starter.html 是 AdminLTE 建议用来作为起点的参考示例。build 目录包含未编译的 CSS、JS 文件；dist 目录包含经过编译的 CSS、JS 文件，同时还提供经过压缩的版本（.min）。plugins 目录存放依赖的插件；pages 目录下是一些示例页面。</p>
+<h3 id="2-首页结构和项目架构"><a href="#2-首页结构和项目架构" class="headerlink" title="2. 首页结构和项目架构"></a>2. 首页结构和项目架构</h3><ol>
+<li>使用express项目生成器：express-generator快速生成ejs模版项目： <ul>
+<li><code>express myapp --view=ejs</code></li>
+</ul>
+</li>
+<li>进入项目文件目录，下载项目依赖： <ul>
+<li><code>npm i</code></li>
+</ul>
+</li>
+<li>将AdminLTE模版的starter.html源码复制myapp的view&#x2F;index.ejs </li>
+<li>启动myap项目：<code>npm start</code>，在浏览器查看首页布局 </li>
+<li>将starter.html的依赖（css，js，img）复制到myapp的public目录 <ul>
+<li>所有的相对路径前加：<code>/</code></li>
+</ul>
+</li>
+<li>将index.ejs的公共部分，抽离出来形成公共模版，并在index.ejs中使用 <ul>
+<li>views—-&gt;（header，aside，footer，sidebar）</li>
+</ul>
+</li>
+<li>处理左侧导航列表（结构、样式、图标） <ul>
+<li>（首页，轮播图管理，商品管理，用户管理，购物车管理，订单管理，消息管理等）</li>
+</ul>
+</li>
+<li>添加子页面，对应左侧导航链接 <ul>
+<li>views—-&gt;（banner.ejs，pro.ejs，users.ejs，cart.ejs，order.ejs，message.ejs）</li>
+</ul>
+</li>
+<li>设置路由 <ul>
+<li>准备路由模块： <ul>
+<li>routes—-&gt;（banner.js，pro.js，users.js，cart.js，order.js，message.js）</li>
+</ul>
+</li>
+<li>设置路由功能：<ul>
+<li>在对应文件中修改：<code>res.render(&quot;pro&quot;);</code></li>
+</ul>
+</li>
+<li>注册路由模块：<ul>
+<li>app.js：<ul>
+<li>引入路由文件：<code>const pro = require(&quot;./routes/pro&quot;);</code></li>
+<li>注册到express：<code>app.use(&quot;/pro&quot;,pro);</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>使用路由：在a标签中正常使用即可 <ul>
+<li>点击时的当前项，也可在路由中设置变量，在渲染模板时使用对应的active即可</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-增加添加信息页面及其功能"><a href="#3-增加添加信息页面及其功能" class="headerlink" title="3. 增加添加信息页面及其功能"></a>3. 增加添加信息页面及其功能</h3><ol>
+<li>在AdminLTE模版中查找表格的UI模块，修改布局，实现商品数据展示表格结构 <ul>
+<li>设定商品字段：品牌，LOGO，分类，图片，名称，价格，销量，库存，折扣，评分，操作（删除，修改）</li>
+</ul>
+</li>
+<li>设置添加表单页面 <ul>
+<li>在views创建goodsAdd.ejs，准备添加表单，并修改表单为对应的商品数据字段，设置id，name等属性 </li>
+<li>因为goodsAdd只能在goods页面被跳转，可以认为goodsAdd是goods的子页面（子路由） </li>
+<li>所以，只需要在rotues的goods.js中，添加路由处理，修改路径和对应渲染的页面即可：</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">get</span>(<span class="string">&#x27;/add&#x27;</span>,<span class="function">(<span class="params">req, res, next</span>)=&gt;</span>&#123;</span><br><span class="line">    res.<span class="title function_">render</span>(<span class="string">&#x27;goodsAdd&#x27;</span>,&#123;<span class="attr">activeIndex</span>:<span class="number">1</span>&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<pre><code>- 在goods.ejs添加链接：&quot;/goods/add&quot;，实现跳转子路由。 
+</code></pre>
+<ol start="3">
+<li>设置路由处理表单提交数据（goods.js—-&gt;addAction） <ul>
+<li>在goods路由中添加子路由addAction，用来接收并处理表单提交数据：</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">post</span>(<span class="string">&#x27;/addAction&#x27;</span>, <span class="function">(<span class="params">req, res, next</span>)=&gt;</span>&#123;</span><br><span class="line">    res.<span class="title function_">send</span>(req.<span class="property">body</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="二、准备数据库"><a href="#二、准备数据库" class="headerlink" title="二、准备数据库"></a>二、准备数据库</h1><ol>
+<li>下载mongoose模块：<code>npm i mongoose -S</code></li>
+<li>在myapp项目中创建数据库操作模块：sql(文件夹)&#x2F;db.js(连接数据库) + pro.js(创建集合) + sql.js(数据增删改查的封装) </li>
+<li>创建集合之前，先设计集合结构（pro.js）：</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">goodsId</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;,</span><br><span class="line">    <span class="attr">brand</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;,</span><br><span class="line">    <span class="attr">logo</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;,</span><br><span class="line">    <span class="attr">goodsName</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;,</span><br><span class="line">    <span class="attr">goodsImg</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;,</span><br><span class="line">    <span class="attr">price</span>:&#123;<span class="attr">type</span>:<span class="title class_">Number</span>&#125;,</span><br><span class="line">    <span class="attr">sales</span>:&#123;<span class="attr">type</span>:<span class="title class_">Number</span>&#125;,</span><br><span class="line">    <span class="attr">stock</span>:&#123;<span class="attr">type</span>:<span class="title class_">Number</span>&#125;,</span><br><span class="line">    <span class="attr">column</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;,</span><br><span class="line">    <span class="attr">discount</span>:&#123;<span class="attr">type</span>:<span class="title class_">Number</span>&#125;,</span><br><span class="line">    <span class="attr">score</span>:&#123;<span class="attr">type</span>:<span class="title class_">Number</span>&#125;,</span><br><span class="line">    <span class="attr">describe</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<pre><code>- 将集合模块暴露，准备实现数据的操作
+</code></pre>
+<h1 id="三、处理数据并插入数据库信息（pro-js—-addAction）"><a href="#三、处理数据并插入数据库信息（pro-js—-addAction）" class="headerlink" title="三、处理数据并插入数据库信息（pro.js—-&gt;addAction）"></a>三、处理数据并插入数据库信息（pro.js—-&gt;addAction）</h1><ol>
+<li>接收到的表单数据，默认为字符数据，需要将对应字段修改成数值数据，如：price，sales，stock，discount，score<ul>
+<li>注意：此处修改数据，是为了符合数据库集合创建时设定的字段类型</li>
+</ul>
+</li>
+<li>且此时缺少商品id字段，为了保证id字段绝对不会重复，此时使用第三方模块：<code>node-uuid</code> <ul>
+<li>下载：<code>npm i node-uuid</code></li>
+<li>引入：<code>const uuid = require(&quot;node-uuid&quot;);</code></li>
+<li>使用：<code>uuid.v1()</code>    &#x2F;&#x2F; 会自动生成唯一的id值</li>
+</ul>
+</li>
+<li>引入集合<ul>
+<li><code>const pro = require(&quot;./../pro.js&quot;);</code></li>
+</ul>
+</li>
+<li>引入数据操作的封装<ul>
+<li><code>const sql = require(&quot;./../sql.js&quot;);</code></li>
+</ul>
+</li>
+<li>开始数据的插入操作：<ul>
+<li><code>sql.insert(...);</code><ul>
+<li>注意数据格式和创建集合字段格式保持一致</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>在插入数据成功后，注意设置路由重定向：<ul>
+<li><code>res.redirect(&quot;./pro&quot;);</code></li>
+</ul>
+</li>
+</ol>
+<h1 id="四、查询数据并渲染页面"><a href="#四、查询数据并渲染页面" class="headerlink" title="四、查询数据并渲染页面"></a>四、查询数据并渲染页面</h1><ul>
+<li>初始打开商品数据页面时，应立即读取数据库信息，然后渲染页面 <ol>
+<li>在rotues的pro.js的路由处理内，先读取数据库数据，读取成功后</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">get</span>(<span class="string">&#x27;/&#x27;</span>, <span class="function">(<span class="params">req, res, next</span>)=&gt;</span>&#123;</span><br><span class="line">    sql.<span class="title function_">find</span>(pro,&#123;&#125;,&#123;<span class="attr">_id</span>:<span class="number">0</span>&#125;).<span class="title function_">then</span>(<span class="function">(<span class="params">data</span>)=&gt;</span>&#123;</span><br><span class="line">        <span class="comment">// 再渲染页面，并将数据设置为变量</span></span><br><span class="line">        res.<span class="title function_">render</span>(<span class="string">&#x27;pro&#x27;</span>,&#123;</span><br><span class="line">            <span class="attr">activeIndex</span>:<span class="number">1</span>,</span><br><span class="line">            <span class="attr">data</span>:data</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<pre><code>2. 在pro.ejs页面解析变量渲染布局
+</code></pre>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;% for(var i=0;i&lt;data.length;i++)&#123; %&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">td</span>&gt;</span>&lt;%= i+1 %&gt;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">td</span>&gt;</span>&lt;%= data[i].brand %&gt;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        ……</span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">&lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="五、从Excel文件，导入数据"><a href="#五、从Excel文件，导入数据" class="headerlink" title="五、从Excel文件，导入数据"></a>五、从Excel文件，导入数据</h1><ol>
+<li>在商品信息管理页面（pro.ejs），添加导入信息按钮 <ul>
+<li><code>&lt;a href=&quot;./pro/upload&quot; class=&quot;btn btn-primary&quot;&gt;导入信息&lt;/a&gt;</code></li>
+</ul>
+</li>
+<li>设置点击导入按钮的跳转路由 <ul>
+<li>在routes&#x2F;pro.js中添加新的路由处理</li>
+<li><code>router.get(&#39;/upload&#39;,(req, res, next)=&gt;&#123; ... &#125;);</code></li>
+</ul>
+</li>
+<li>需要借助node解析excel的第三方模块：node-xlsx <ul>
+<li>下载：<code>npm i node-xlsx</code></li>
+<li>引入：<code>const xlsx = require(&quot;node-xlsx&quot;);</code></li>
+<li>使用：<code>const excelData = xlsx.parse(&quot;excel文件的绝对路径&quot;);</code></li>
+</ul>
+</li>
+<li>在upload路由处理中，解析文件数据，插入数据库，重定向路由</li>
+</ol>
+<h1 id="六、删除数据并删除数据库信息"><a href="#六、删除数据并删除数据库信息" class="headerlink" title="六、删除数据并删除数据库信息"></a>六、删除数据并删除数据库信息</h1><ol>
+<li>点击删除按钮时，需将goodsId提交到指定删除路由 <ul>
+<li><code>href=&quot;./pro/rm?id=&lt;%= data[i].goodsId %&gt;&quot;</code></li>
+</ul>
+</li>
+<li>设置路由，接收商品goodsId后，删除数据库中数据</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">get</span>(<span class="string">&#x27;/rm&#x27;</span>, <span class="function">(<span class="params">req, res, next</span>)=&gt;</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> data = req.<span class="property">query</span>.<span class="property">id</span>;</span><br><span class="line">    sql.<span class="title function_">delete</span>(pro,&#123;<span class="attr">goodsId</span>:data&#125;).<span class="title function_">then</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">        res.<span class="title function_">redirect</span>(<span class="string">&quot;/pro&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>删除完成后，重定向路由为当前页面 <ul>
+<li><code>res.redirect(&quot;/pro&quot;);</code></li>
+</ul>
+</li>
+</ol>
+<h1 id="七、商品管理其他功能"><a href="#七、商品管理其他功能" class="headerlink" title="七、商品管理其他功能"></a>七、商品管理其他功能</h1><h3 id="1-增加更新页面及其功能"><a href="#1-增加更新页面及其功能" class="headerlink" title="1. 增加更新页面及其功能"></a>1. 增加更新页面及其功能</h3><ul>
+<li>过程可参考添加页面及其功能 <ul>
+<li>额外增加goodsId字段的显示，但是不允许修改 <ul>
+<li>使用readonly属性设置输入框只读</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>处理数据并更新数据库信息<ul>
+<li>过程可参考添加数据 </li>
+<li>注意goodsId的获取</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-数据排序"><a href="#2-数据排序" class="headerlink" title="2. 数据排序"></a>2. 数据排序</h3><ol>
+<li>添加排序按钮，跳转到排序路由 </li>
+<li>设置排序路由 </li>
+<li>根据排序规则，查找数据，渲染页面</li>
+</ol>
+<h3 id="3-数据搜索"><a href="#3-数据搜索" class="headerlink" title="3. 数据搜索"></a>3. 数据搜索</h3><ol>
+<li>设置搜索布局，跳转到搜索路由 </li>
+<li>设置搜索路由 </li>
+<li>根据搜索关键字，查询数据，渲染页面</li>
+</ol>
+<h3 id="4-分页"><a href="#4-分页" class="headerlink" title="4. 分页"></a>4. 分页</h3><ol>
+<li>设置分页布局，跳转到分页路由</li>
+<li>设置分页路由</li>
+<li>根据分页信息，查询数据，渲染页面</li>
+</ol>
+<h1 id="八、banner管理"><a href="#八、banner管理" class="headerlink" title="八、banner管理"></a>八、banner管理</h1><h3 id="1-前端上传base64数据"><a href="#1-前端上传base64数据" class="headerlink" title="1. 前端上传base64数据"></a>1. 前端上传base64数据</h3><ol>
+<li>前端图片上传 <ul>
+<li>客户端js使用FileReader将图片文件转成base64</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;imgFile&quot;</span> <span class="attr">id</span>=<span class="string">&quot;file&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> f = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;file&quot;</span>);</span><br><span class="line"><span class="comment">// FileReader使用方式</span></span><br><span class="line">obtn.<span class="property">onclick</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">var</span> reader = <span class="keyword">new</span> <span class="title class_">FileReader</span>();</span><br><span class="line">    reader.<span class="title function_">readAsDataURL</span>(f.<span class="property">files</span>[<span class="number">0</span>]);    <span class="comment">// 解析成base64格式</span></span><br><span class="line">    reader.<span class="property">onload</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123; </span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">result</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>图片管理</li>
+<li>banner接口实现</li>
+</ol>
+<h3 id="2-前端直接上传文件"><a href="#2-前端直接上传文件" class="headerlink" title="2. 前端直接上传文件"></a>2. 前端直接上传文件</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_41636483/article/details/113620276">multer向服务器上传文件</a></p>
+<h1 id="九、管理员登录"><a href="#九、管理员登录" class="headerlink" title="九、管理员登录"></a>九、管理员登录</h1><h3 id="1-设计管理员信息数据库"><a href="#1-设计管理员信息数据库" class="headerlink" title="1. 设计管理员信息数据库"></a>1. 设计管理员信息数据库</h3><ol>
+<li>准备数据库，在myapp项目中创建管理员信息数据库集合：admin.js(创建集合) </li>
+<li>并设计集合结构（admin.js）：</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">userId</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;,   <span class="comment">// 用户id</span></span><br><span class="line">    <span class="attr">userName</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;, <span class="comment">// 用户名</span></span><br><span class="line">    <span class="attr">passWord</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;, <span class="comment">// 密码</span></span><br><span class="line">    <span class="attr">power</span>:&#123;<span class="attr">type</span>:<span class="title class_">Number</span>&#125;,    <span class="comment">// 权限：1普通管理员，2超级管理员</span></span><br><span class="line">    <span class="attr">avatar</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;,   <span class="comment">// 头像</span></span><br><span class="line">    <span class="attr">lastTime</span>:&#123;<span class="attr">type</span>:<span class="title class_">String</span>&#125;  <span class="comment">// 最后一次登录时间</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<pre><code>- 将集合模块暴露，准备实现数据的操作
+</code></pre>
+<ol start="3">
+<li>使用uuid模块生成数据的唯一id </li>
+<li>使用md5模块，对用户密码进行加密操作 <ul>
+<li><code>npm install md5</code></li>
+</ul>
+</li>
+<li>设计权限状态：1为普通管理员，0位超级管理员 </li>
+<li>插入测试数据（insert.js）</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> admin = <span class="built_in">require</span>(<span class="string">&quot;./admin&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> uuid = <span class="built_in">require</span>(<span class="string">&quot;node-uuid&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> md5 = <span class="built_in">require</span>(<span class="string">&quot;md5&quot;</span>);</span><br><span class="line"></span><br><span class="line">admin.<span class="title function_">insertMany</span>(&#123;</span><br><span class="line">    <span class="attr">userId</span>:uuid.<span class="title function_">v1</span>(),   <span class="comment">// 用户id</span></span><br><span class="line">    <span class="attr">userName</span>:<span class="string">&quot;liyang&quot;</span>, <span class="comment">// 用户名</span></span><br><span class="line">    <span class="attr">passWord</span>:<span class="title function_">md5</span>(<span class="string">&quot;123456&quot;</span>), <span class="comment">// 密码</span></span><br><span class="line">    <span class="attr">power</span>:<span class="number">1</span>    <span class="comment">// 权限：1普通管理员，2超级管理员</span></span><br><span class="line">&#125;,<span class="function">(<span class="params">err</span>)=&gt;</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;管理员添加成功&quot;</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-增加登陆页面及路由"><a href="#2-增加登陆页面及路由" class="headerlink" title="2. 增加登陆页面及路由"></a>2. 增加登陆页面及路由</h3><ol>
+<li>在views中创建<code>login.ejs</code>，处理布局。 </li>
+<li>注册login页面的路由信息 </li>
+<li>在login路由中添加<code>/handle</code>，用来处理登录验证，修改login.ejs中登录的提交地址为<code>/login/handle</code> </li>
+<li>在<code>/login/handle</code>的路由处理中，根据接收到的用户信息，请求数据库，请求到数据，表示登录成功，否则表示登录失败 </li>
+<li>登录成功，存储登录成功之后的<strong>状态</strong>，同时路由重定向到首页 </li>
+<li>登录失败，路由重定向回登录页面</li>
+</ol>
+<h3 id="3-状态存储"><a href="#3-状态存储" class="headerlink" title="3. 状态存储"></a>3. 状态存储</h3><ol>
+<li>通过cookie <ul>
+<li>存：<code>res.cookie(&quot;isLogin&quot;,&quot;ok&quot;);</code></li>
+<li>读：<code>req.cookies.isLogin</code></li>
+</ul>
+</li>
+<li>通过session <ul>
+<li>下载session模块：<code>npm install express-session</code></li>
+<li>配置session信息：</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">app.<span class="title function_">use</span>(<span class="title function_">session</span>(&#123;</span><br><span class="line">  <span class="attr">secret</span>: <span class="string">&#x27;加密字段&#x27;</span>,   <span class="comment">// 加密信息，可以随便写</span></span><br><span class="line">  <span class="attr">resave</span>: <span class="literal">false</span>,      <span class="comment">// 强制保存session，默认为true，建议设置为false</span></span><br><span class="line">  <span class="attr">saveUninitialized</span>: <span class="literal">true</span>,    <span class="comment">// 强制将未初始化的session存储，默认为true，建议为true</span></span><br><span class="line">  <span class="attr">cookie</span>: &#123; <span class="attr">maxAge</span>: <span class="number">1000</span> * <span class="number">30</span> * <span class="number">60</span> &#125;    <span class="comment">// 过期时间，毫秒数</span></span><br><span class="line">&#125;))</span><br></pre></td></tr></table></figure>
+
+<pre><code>- 存：`req.session.isLogin = &quot;ok&quot;;`
+- 读：`req.session.isLogin`
+</code></pre>
+<ol start="3">
+<li>通过token — 前后端分离 <ul>
+<li>第一次请求时，用户发送账号与密码</li>
+<li>后台校验通过，生成一个有时效性的token，再将此token发送给用户</li>
+<li>用户获得token后，将此token存储在本地，一般存储在localstorage或cookie</li>
+<li>之后每次请求都会将此token添加在请求头，所有需要校验身份的接口都会被校验token，若token解析后的数据包含用户身份信息，则身份验证通过。</li>
+<li>如：</li>
+<li>ajax登陆成功后，接收后端返回一个token字段str，</li>
+<li>使用localStorage.setItem(‘token’, str)或document.cookie &#x3D; “token&#x3D;” + str,</li>
+<li>以后再调用接口时先从本地取出token字段的值，然后随着请求的数据一起发送到服务器，服务器验证token的有效性，如果ok则返回数据，如果不ok，返回某一个字段，表示未登录，前端负责页面跳转到登录页面</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-状态验证"><a href="#4-状态验证" class="headerlink" title="4. 状态验证"></a>4. 状态验证</h3><ul>
+<li>所有页面路由注册之前（除登录路由之外），开启路由拦截</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">app.<span class="title function_">all</span>(<span class="string">&quot;*&quot;</span>,<span class="function">(<span class="params">req,res,next</span>)=&gt;</span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(req.<span class="property">session</span>.<span class="property">isLogin</span> === <span class="string">&quot;ok&quot;</span>)&#123;</span><br><span class="line">    <span class="title function_">next</span>();</span><br><span class="line">  &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    res.<span class="title function_">redirect</span>(<span class="string">&quot;/login&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-权限验证"><a href="#5-权限验证" class="headerlink" title="5. 权限验证"></a>5. 权限验证</h3><ol>
+<li>将用户权限值一同存在session</li>
+<li>需要权限验证时，获取session中的权限信息</li>
+<li>将权限信息传给aside.ejs，决定是否渲染某些导航</li>
+</ol>
+<h3 id="6-防止未登录或无权限用户强行通过路由访问"><a href="#6-防止未登录或无权限用户强行通过路由访问" class="headerlink" title="6. 防止未登录或无权限用户强行通过路由访问"></a>6. 防止未登录或无权限用户强行通过路由访问</h3><ul>
+<li>在路由渲染时，立即获取session信息，进行登录和权重验证</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">get</span>(<span class="string">&#x27;/&#x27;</span>, <span class="keyword">function</span>(<span class="params">req, res, next</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span>(req.<span class="property">session</span>.<span class="property">isLogin</span> === <span class="string">&quot;ok&quot;</span> &amp;&amp; req.<span class="property">session</span>.<span class="property">power</span> &lt; <span class="number">1</span>)&#123;</span><br><span class="line">    res.<span class="title function_">render</span>(<span class="string">&quot;cart&quot;</span>, &#123;</span><br><span class="line">      <span class="attr">activeIndex</span>:<span class="number">4</span>,</span><br><span class="line">      <span class="attr">power</span>:req.<span class="property">session</span>.<span class="property">power</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    res.<span class="title function_">render</span>(<span class="string">&quot;noPower&quot;</span>,&#123;</span><br><span class="line">      <span class="attr">activeIndex</span>:<span class="number">0</span>,</span><br><span class="line">      <span class="attr">power</span>:req.<span class="property">session</span>.<span class="property">power</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>更新: 2024-06-11 17:05:50<br>原文: <a target="_blank" rel="noopener" href="https://www.yuque.com/liyangyf/node/oo4g2b">https://www.yuque.com/liyangyf/node/oo4g2b</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.p0.ee">admin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.p0.ee/2021/07/22/node/04%EF%BC%9A%E5%90%8E%E5%8F%B0%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE/">https://blog.p0.ee/2021/07/22/node/04%EF%BC%9A%E5%90%8E%E5%8F%B0%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.p0.ee" target="_blank"></a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a></div><div class="post-share"><div class="social-share" data-image="/img/Logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2021/07/21/node/03%EF%BC%9AMongoDB%E7%9A%84%E4%BD%BF%E7%94%A8/" title="MongoDB的使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">MongoDB的使用</div></div><div class="info-2"><div class="info-item-1">03：MongoDB的使用一、介绍 MongoDB 是一个基于分布式文件存储的数据库。 由 C++ 语言编写，是一个开源数据库系统。 旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。 MongoDB 是一个介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。 MongoDB 将数据存储为一个文档，数据结构由键值(key&#x3D;&gt;value)对组成。 MongoDB 文档类似于 JSON 对象。字段值可以包含其他文档，数组及文档数组。 在高负载的情况下，添加更多的节点，可以保证服务器性能。  关系型数据库（mysql）与非关系型数据库（mongodb）的区别：   sql术语&#x2F;概念 mongodb术语&#x2F;概念 解释&#x2F;说明    database database 数据库   table collection 数据库表&#x2F;集合   row document 数据记录行&#x2F;文档   column field 数据字段&#x2F;域   index index 索引   table...</div></div></div></a><a class="pagination-related" href="/2021/07/23/node/05%EF%BC%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/" title="接口文档"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">接口文档</div></div><div class="info-2"><div class="info-item-1">05：接口文档一、准备商品数据接口路由 在项目中创建新文件夹，准备存放接口文件：myapp—-&gt;api文件夹  创建商品接口的路由文件：api----&gt;goods.js  在app.js中注册接口：    12var apiGoods = require(&quot;./api/goods.js&quot;);app.use(&quot;/api/goods&quot;,apiGoods);  3.  测试接口：`localhost:3000/api/goods`   二、实现获取商品数据接口 引入数据库相关模块  接收到路由请求后，读取数据库数据，处理之后返回  数据格式规范：  没有数据  &#123; &quot;code&quot;: 400, &quot;title&quot;: &quot;请求失败&quot;, &quot;msg&quot;: &quot;NOT DATA&quot; &#125;   有数据  &#123; &quot;code&quot;: 200, &quot;title&quot;: &quot;请求成功&quot;,...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2021/07/10/javascript/01%EF%BC%9AJS%E5%9F%BA%E7%A1%80/" title="JS基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">JS基础</div></div><div class="info-2"><div class="info-item-1">01：JS基础一、JavaScript 介绍 网页的组成：结构html，样式css，行为js  html：超文本标记语言 css：层叠样式表 javascript：网页的脚本语言，用来描述网页的逻辑交互行为 是一种基于对象和事件驱动并具有相对安全性的客户端脚本语言。同时也是一种广泛用于客户端Web开发的脚本语言，常用来给HTML网页添加动态功能，比如响应用户的各种操作。     javascript的组成：ECMAScript，DOM，BOM  ECMAScript：语法，规范，标准，定义了javascript的语法规范,描述了语言的基本语法和数据类型。 用来约束代码用什么样的格式书写，写什么，如何执行   DOM（Document Object Model）：文档对象模型，document，表示网页。 提供了网页的相关操作，标准化组织是W3C。 有一套成熟的可以操作页面元素的 API，通过 DOM 可以操作页面中的元素。 如：增加元素，删除元素，改变元素位置等     BOM（Browser Object...</div></div></div></a><a class="pagination-related" href="/2021/07/10/javascript/02%EF%BC%9A%E5%88%86%E6%94%AF/" title="分支"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-10</div><div class="info-item-2">分支</div></div><div class="info-2"><div class="info-item-1">02：分支一、程序结构 顺序结构：默认的程序执行顺序，从上到下依次执行 分支结构：根据程序执行过程中可能产生的不同信息，决定执行不同的功能 配合分支语句   循环结构：根据执行条件重复执行某个功能 配合循环语句    二、分支语句 单分支：if()&#123;&#125; 根据条件决定执行或不执行    123456789101112// if()&#123;&#125;//     if      语句名，关键字//     ()      执行条件//     &#123;&#125;      执行条件符合时（true），要执行的代码console.log(1);if( true )&#123;    console.log(&quot;hello&quot;);&#125;console.log(2);   双分支：if(){}else{} 根据条件决定执行A或执行B    12345678910111213141516// if()&#123;&#125;else&#123;&#125;    // if      语句名1，关键字    // ()     ...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/03%EF%BC%9A%E5%BE%AA%E7%8E%AF/" title="循环"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">循环</div></div><div class="info-2"><div class="info-item-1">03：循环一、循环结构介绍 循环结构存在的意义  计算1+2+3+……+1000的和 需要向计算机输入重复的命令 节省向计算机输入命令的时间，并没有提升性能   循环结构的三要素  创建（初始化）计数器 执行条件 计数器的改变   死循环：无法通过自身控制结束的循环  瞬间占用大量性能，造成计算机死机，程序崩溃 尽量避免产生死循环 但可以利用死循环解决无法确定重复执行次数的问题    二、循环语句 while 循环语句  1234567891011// while()&#123;&#125;    // while       语句名，关键字    // ()          执行条件    // &#123;&#125;          当执行条件为true时，要重复执行的语句// 打印10次hellovar i = 0;while(i &lt; 10)&#123;    console.log(&quot;hello&quot;);    i++;&#125;   do...while 循环语句  123456789101112//...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/04%EF%BC%9A%E5%87%BD%E6%95%B0/" title="函数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">函数</div></div><div class="info-2"><div class="info-item-1">04：函数一、函数的基本概念 函数的概念 函数，即功能。将实现了某个功能的代码，集中起来，通过函数语句进行封装，封装之后，可以选择直接执行或行为 的 代码段。 函数是一种数据类型：function 对象：数据的打包，函数：代码的打包     函数最大的意义：封装功能 函数的特点： 重复使用 选择使用 忽略细节    二、函数的使用 创建函数 声明式：使用function关键字创建函数 function 函数名(){} var 变量名   赋值式：配合变量，赋个函数值，将函数作为一个值或表达式使用 var 变量名 &#x3D; function(){} 将函数作为值使用      123456789// 固定语法：// function 函数名()&#123;&#125;    // function：声明关键字，用来声明函数    // 函数名    // ()：参数，函数的入口    // &#123;&#125;：函数体，内放置要封装的代码function fn()&#123;	console.log(&quot;hello js&quot;);&#125;   使用函数...</div></div></div></a><a class="pagination-related" href="/2021/07/11/javascript/05%EF%BC%9A%E5%AF%B9%E8%B1%A1/" title="对象"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-11</div><div class="info-item-2">对象</div></div><div class="info-2"><div class="info-item-1">05：对象一、对象的概念和特点 对象：是一种复杂数据，是数据的打包形式 无序集合，object对象，花括号形式 以键值对的形式存在，键和值一一对应，使用冒号连接，键值对之间使用逗号隔开 键：key，要遵守变量的命名规则，一个对象中不允许出现重复的键 值：value，就是正常数据 使用场景：一般用来打包非同类但属于同一个个体的数据 一个班级中某一个学生的所有信息 姓名，性别，年龄，手机号，住址     有序集合，array对象，中括号形式  数据之间默认以索引的形式，进行标记，索引从0开始，到length-1 使用场景：一般用来打包同类数据  一个班级所有学生的姓名  姓名，姓名，姓名       特点： 提升了数据的查找速度 提升了数据的传输速度   本质：键值对 键和值成对出现，键和值使用冒号连接，键值对之间使用逗号隔开，使用花括号做包裹 &#123;name:&quot;admin&quot;,age:18,sex:&quot;男&quot;&#125;   意义 存储数据 编程（面向对象编程）    二、对象的创建 字面量：var obj = &#123;...</div></div></div></a><a class="pagination-related" href="/2021/07/12/javascript/06%EF%BC%9A%E6%95%B0%E7%BB%84/" title="数组"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-07-12</div><div class="info-item-2">数组</div></div><div class="info-2"><div class="info-item-1">06：数组一、数组的概念和特点 数组是对象的一种，数组内的数据会按照顺序进行排列，是一种有序集合 数据按照顺序被标记，序号，也叫索引，从0开始 arr[0]   数组拥有length属性，用来表示自身有多少个数据 arr.length   因为索引的规律为从0开始递增，通过length属性标记数据总数，所以可以通过循环语句遍历数组    123for(var i=0; i&lt;arr.length; i++)&#123;  console.log( arr[i] );&#125;  二、数组的创建 字面量：var arr1 = [数据1, 数据2, 数据3, ...]; 创建函数：var arr2 = new Array(数据1, 数据2, 数据3, ...); 区别：当有且只有一个数值型数据时，字面量创建就是作为一个数据，构造函数创建会作为数组的长度，每个位置为undefined  三、数组的操作 索引+长度操作  原生操作，底层操作，所有数组操作功能的基础 查：arr[索引] 改：arr[索引] = &quot;新值&quot; 增：默认只能在数组的最后增加...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">admin</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">一个前端程序员，爱折腾，爱技术分享</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#04%EF%BC%9A%E5%90%8E%E5%8F%B0%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E9%A1%B9%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">04：后台信息管理项目</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%90%8E%E5%8F%B0"><span class="toc-number">2.</span> <span class="toc-text">一、数据管理后台</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-AdminLTE%E6%A8%A1%E7%89%88%E7%9A%84%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.0.1.</span> <span class="toc-text">1. AdminLTE模版的介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%A6%96%E9%A1%B5%E7%BB%93%E6%9E%84%E5%92%8C%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84"><span class="toc-number">2.0.2.</span> <span class="toc-text">2. 首页结构和项目架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%A2%9E%E5%8A%A0%E6%B7%BB%E5%8A%A0%E4%BF%A1%E6%81%AF%E9%A1%B5%E9%9D%A2%E5%8F%8A%E5%85%B6%E5%8A%9F%E8%83%BD"><span class="toc-number">2.0.3.</span> <span class="toc-text">3. 增加添加信息页面及其功能</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">3.</span> <span class="toc-text">二、准备数据库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%A4%84%E7%90%86%E6%95%B0%E6%8D%AE%E5%B9%B6%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BF%A1%E6%81%AF%EF%BC%88pro-js%E2%80%94-addAction%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">三、处理数据并插入数据库信息（pro.js—-&gt;addAction）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE%E5%B9%B6%E6%B8%B2%E6%9F%93%E9%A1%B5%E9%9D%A2"><span class="toc-number">5.</span> <span class="toc-text">四、查询数据并渲染页面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%BB%8EExcel%E6%96%87%E4%BB%B6%EF%BC%8C%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">6.</span> <span class="toc-text">五、从Excel文件，导入数据</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE%E5%B9%B6%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BF%A1%E6%81%AF"><span class="toc-number">7.</span> <span class="toc-text">六、删除数据并删除数据库信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%95%86%E5%93%81%E7%AE%A1%E7%90%86%E5%85%B6%E4%BB%96%E5%8A%9F%E8%83%BD"><span class="toc-number">8.</span> <span class="toc-text">七、商品管理其他功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%A2%9E%E5%8A%A0%E6%9B%B4%E6%96%B0%E9%A1%B5%E9%9D%A2%E5%8F%8A%E5%85%B6%E5%8A%9F%E8%83%BD"><span class="toc-number">8.0.1.</span> <span class="toc-text">1. 增加更新页面及其功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E6%8E%92%E5%BA%8F"><span class="toc-number">8.0.2.</span> <span class="toc-text">2. 数据排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%95%B0%E6%8D%AE%E6%90%9C%E7%B4%A2"><span class="toc-number">8.0.3.</span> <span class="toc-text">3. 数据搜索</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%88%86%E9%A1%B5"><span class="toc-number">8.0.4.</span> <span class="toc-text">4. 分页</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AB%E3%80%81banner%E7%AE%A1%E7%90%86"><span class="toc-number">9.</span> <span class="toc-text">八、banner管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%89%8D%E7%AB%AF%E4%B8%8A%E4%BC%A0base64%E6%95%B0%E6%8D%AE"><span class="toc-number">9.0.1.</span> <span class="toc-text">1. 前端上传base64数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%89%8D%E7%AB%AF%E7%9B%B4%E6%8E%A5%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6"><span class="toc-number">9.0.2.</span> <span class="toc-text">2. 前端直接上传文件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E7%AE%A1%E7%90%86%E5%91%98%E7%99%BB%E5%BD%95"><span class="toc-number">10.</span> <span class="toc-text">九、管理员登录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%AE%BE%E8%AE%A1%E7%AE%A1%E7%90%86%E5%91%98%E4%BF%A1%E6%81%AF%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">10.0.1.</span> <span class="toc-text">1. 设计管理员信息数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%A2%9E%E5%8A%A0%E7%99%BB%E9%99%86%E9%A1%B5%E9%9D%A2%E5%8F%8A%E8%B7%AF%E7%94%B1"><span class="toc-number">10.0.2.</span> <span class="toc-text">2. 增加登陆页面及路由</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%8A%B6%E6%80%81%E5%AD%98%E5%82%A8"><span class="toc-number">10.0.3.</span> <span class="toc-text">3. 状态存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%8A%B6%E6%80%81%E9%AA%8C%E8%AF%81"><span class="toc-number">10.0.4.</span> <span class="toc-text">4. 状态验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%9D%83%E9%99%90%E9%AA%8C%E8%AF%81"><span class="toc-number">10.0.5.</span> <span class="toc-text">5. 权限验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E9%98%B2%E6%AD%A2%E6%9C%AA%E7%99%BB%E5%BD%95%E6%88%96%E6%97%A0%E6%9D%83%E9%99%90%E7%94%A8%E6%88%B7%E5%BC%BA%E8%A1%8C%E9%80%9A%E8%BF%87%E8%B7%AF%E7%94%B1%E8%AE%BF%E9%97%AE"><span class="toc-number">10.0.6.</span> <span class="toc-text">6. 防止未登录或无权限用户强行通过路由访问</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/10/%E5%AE%89%E5%8D%93/%E5%88%A9%E7%94%A8github-Action%E7%BC%96%E8%AF%91%E5%AE%89%E5%8D%93%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8/" title="利用github Action编译安卓内核驱动">利用github Action编译安卓内核驱动</a><time datetime="2024-11-10T04:58:06.000Z" title="发表于 2024-11-10 04:58:06">2024-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/10/vue/%E8%A7%A3%E5%86%B3safari%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8window-open%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/" title="解决safari浏览器使用window.open失效的问题">解决safari浏览器使用window.open失效的问题</a><time datetime="2023-07-10T04:58:06.000Z" title="发表于 2023-07-10 04:58:06">2023-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/02/02/Cloudflare%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89Docker%E9%95%9C%E5%83%8F%E6%BA%90/" title="Cloudflare搭建私有Docker镜像源">Cloudflare搭建私有Docker镜像源</a><time datetime="2023-02-02T04:58:06.000Z" title="发表于 2023-02-02 04:58:06">2023-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/20/docker%E8%AE%B0%E5%BD%95/" title="Docker记录">Docker记录</a><time datetime="2022-06-20T04:58:06.000Z" title="发表于 2022-06-20 04:58:06">2022-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/02/07/vue/vue3%E5%85%B6%E4%BB%96/" title="vue3其他">vue3其他</a><time datetime="2022-02-07T04:58:06.000Z" title="发表于 2022-02-07 04:58:06">2022-02-07</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2025 By admin</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/live2d-widget/autoload.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="255,255,255" opacity="1" zIndex="-1" count="99" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script></div></body></html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>UE4找Count基址 | 个人博客</title><meta name="author" content="admin"><meta name="copyright" content="admin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="什么是Count？Count 就是 UE4 引擎开发的游戏在运行过程中动态创建的 Actor 的数量，也可以说是在当前玩家一定范围内的 Actor 的数量。因为如果离得太远，由于游戏性能优化原因，是不会把非常远的 Actor 也获取的。 我们找Count来干什么？找到 Count，我们也就找到了 UWorld、ULevel 和 ActorArray 的地址。因为 Count 的地址都是在 UWor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UE4找Count基址">
+<meta property="og:url" content="https://blog.p0.ee/2021/06/21/ue4/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/index.html">
+<meta property="og:site_name" content="个人博客">
+<meta property="og:description" content="什么是Count？Count 就是 UE4 引擎开发的游戏在运行过程中动态创建的 Actor 的数量，也可以说是在当前玩家一定范围内的 Actor 的数量。因为如果离得太远，由于游戏性能优化原因，是不会把非常远的 Actor 也获取的。 我们找Count来干什么？找到 Count，我们也就找到了 UWorld、ULevel 和 ActorArray 的地址。因为 Count 的地址都是在 UWor">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.p0.ee/usr/uploads/2021/06/3564924053.png">
+<meta property="article:published_time" content="2021-06-21T02:21:20.000Z">
+<meta property="article:modified_time" content="2025-10-30T02:51:52.317Z">
+<meta property="article:author" content="admin">
+<meta property="article:tag" content="UE4">
+<meta property="article:tag" content="游戏开发">
+<meta property="article:tag" content="内存分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.p0.ee/usr/uploads/2021/06/3564924053.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "UE4找Count基址",
+  "url": "https://blog.p0.ee/2021/06/21/ue4/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/",
+  "image": "https://blog.p0.ee/usr/uploads/2021/06/3564924053.png",
+  "datePublished": "2021-06-21T02:21:20.000Z",
+  "dateModified": "2025-10-30T02:51:52.317Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "admin",
+      "url": "https://blog.p0.ee/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/g.jpeg"><link rel="canonical" href="https://blog.p0.ee/2021/06/21/ue4/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'UE4找Count基址',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/mycss.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/background.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/Logo.png" alt="Logo"><span class="site-name">个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">UE4找Count基址</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://p0.ee/"><i class="fa-fw fas fa-id-card"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-user-group"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/flink/"><i class="fa-fw fa-solid fa-user-tie"></i><span> 本站友链</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">UE4找Count基址</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2021-06-21T02:21:20.000Z" title="发表于 2021-06-21 02:21:20">2021-06-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/windows/">windows</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="什么是Count？"><a href="#什么是Count？" class="headerlink" title="什么是Count？"></a>什么是Count？</h2><p>Count 就是 UE4 引擎开发的游戏在运行过程中动态创建的 Actor 的数量，也可以说是在当前玩家一定范围内的 Actor 的数量。因为如果离得太远，由于游戏性能优化原因，是不会把非常远的 Actor 也获取的。</p>
+<h2 id="我们找Count来干什么？"><a href="#我们找Count来干什么？" class="headerlink" title="我们找Count来干什么？"></a>我们找Count来干什么？</h2><p>找到 Count，我们也就找到了 UWorld、ULevel 和 ActorArray 的地址。因为 Count 的地址都是在 UWorld 里的 ULevel 下的。</p>
+<p>ActorArray 在 UE4 里其实是一个 TArray 的结构体：</p>
+<ul>
+<li>第一个变量为指向 Actor 指针数组的指针</li>
+<li>第二个变量 Num 就是这个数组的长度，也就是 Count</li>
+</ul>
+<p>所以 Count 的地址减去8字节，就是 ActorArray 的地址。获取这两个值后，就可以遍历所有 Actor。</p>
+<p>本文以单机游戏 Battle Royale Trainer 为例进行分析。单机游戏相比网络游戏干扰较少，适合练习数据挖掘技巧。</p>
+<h2 id="搜索Count的动态地址"><a href="#搜索Count的动态地址" class="headerlink" title="搜索Count的动态地址"></a>搜索Count的动态地址</h2><ol>
+<li>首次扫描：4字节，值范围1-2000</li>
+<li>对靶子射击，搜索增加的数值（击中会创建伤害数值Actor）</li>
+<li>空枪测试，搜索未变动的数值</li>
+<li>重复以上步骤直到结果数量较少</li>
+<li>使用内存浏览器（Ctrl+B）查看结果，显示类型设为8字节</li>
+<li>寻找整齐的Actor数据（如图示0000020B）</li>
+</ol>
+<p><img src="/usr/uploads/2021/06/3564924053.png" alt="Count数据示例"></p>
+<h2 id="找到Count基址"><a href="#找到Count基址" class="headerlink" title="找到Count基址"></a>找到Count基址</h2><ol>
+<li>对Count地址进行指针扫描：<ul>
+<li>设置最大2级偏移</li>
+<li>取消勾选”每个节点的偏移最大相差”</li>
+<li>注意扫描路径不能有中文</li>
+</ul>
+</li>
+</ol>
+<p><img src="/usr/uploads/2021/06/1205918573.png" alt="指针扫描设置"></p>
+<ol start="2">
+<li><p>观察扫描结果中不会闪动的行：<br><img src="/usr/uploads/2021/06/886573002.png" alt="指针扫描结果"></p>
+</li>
+<li><p>重启游戏验证地址有效性</p>
+</li>
+<li><p>确认偏移值（UE4一般第一层偏移为30）</p>
+</li>
+</ol>
+<p><img src="/usr/uploads/2021/06/2545629889.png" alt="最终结果"></p>
+<h2 id="最终基址数据"><a href="#最终基址数据" class="headerlink" title="最终基址数据"></a>最终基址数据</h2><ul>
+<li>UWorld: “BattleRoyaleTrainer-Win64-Shipping.exe”+02AEFFB8</li>
+<li>ULevel: UWorld -&gt; 30</li>
+<li>Count: UWorld -&gt; 30 -&gt; B8</li>
+<li>ActorArray: UWorld -&gt; 30 -&gt; B0</li>
+</ul>
+<h2 id="联网游戏的特殊情况"><a href="#联网游戏的特殊情况" class="headerlink" title="联网游戏的特殊情况"></a>联网游戏的特殊情况</h2><p>联网游戏分析方法略有不同：</p>
+<ol>
+<li>受其他玩家干扰，需要更多次搜索来缩小范围</li>
+<li>可通过人物Z坐标等其他数据反推Count基址</li>
+<li>利用UE4引擎特性（ULevel偏移通常为0x30）辅助定位</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.p0.ee">admin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.p0.ee/2021/06/21/ue4/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/">https://blog.p0.ee/2021/06/21/ue4/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/UE4%E6%89%BECount%E5%9F%BA%E5%9D%80/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.p0.ee" target="_blank"></a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/UE4/">UE4</a><a class="post-meta__tags" href="/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a><a class="post-meta__tags" href="/tags/%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/">内存分析</a></div><div class="post-share"><div class="social-share" data-image="/usr/uploads/2021/06/3564924053.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2021/06/21/ue4/UE4%E5%BC%95%E6%93%8E%E6%B8%B8%E6%88%8F%E7%BB%93%E6%9E%84%E5%92%8C%E4%B8%80%E4%BA%9B%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/UE4%E5%BC%95%E6%93%8E%E6%B8%B8%E6%88%8F%E7%BB%93%E6%9E%84%E5%92%8C%E4%B8%80%E4%BA%9B%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" title="UE4引擎游戏结构和一些基础概念"><img class="cover" src="/usr/uploads/2021/06/482392516.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">UE4引擎游戏结构和一些基础概念</div></div><div class="info-2"><div class="info-item-1">UE4游戏结构概览小龙讲师总结的结构: 常用结构概念UWorld 单例对象，逆向UE4游戏的重要入口 可获取UGameInstance和ULevel  UGameInstanceUWorld类的属性: 1struct UGameInstance* OwningGameInstance;  ULocalPlayerUGameInstance类的属性: 1struct TArray&lt;struct ULocalPlayer*&gt; LocalPlayers; 数组的第一个元素即为当前角色的ULocalPlayer。 APlayerControllerULocalPlayer父类(UPlayer)的属性: 1struct APlayerController* PlayerController; 包含APawn、APlayerCameraManager等重要数据。 APawn 继承自AActor 在UE4逆向中称为InPawn 位于AController类:  1struct APawn*...</div></div></div></a><a class="pagination-related" href="/2021/06/21/ue4/UE4%E6%89%BEActorArray%E4%B8%AD%E7%9A%84%E5%9D%90%E6%A0%87%E5%81%8F%E7%A7%BB/UE4%E6%89%BEActorArray%E4%B8%AD%E7%9A%84%E5%9D%90%E6%A0%87%E5%81%8F%E7%A7%BB/" title="UE4找ActorArray中的坐标偏移"><img class="cover" src="/usr/uploads/2021/06/60814851.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">UE4找ActorArray中的坐标偏移</div></div><div class="info-2"><div class="info-item-1">为什么要在ActorArray中找坐标？我们知道 ActorArray 中存放的是所有附近的 Actor，如果我们找到 ActorArray 下的坐标，则可通过遍历获取所有 Actor 的坐标。 开始找坐标 选中我们找到的 Count 地址，浏览相关内存区域（Ctrl+B） 地址减8字节，使用快捷键空格跳转到（前进）这个地址所在的内存位置  Count 地址为 0x1FCCD0BB738，减8字节得到 ActorArray 的地址（其实是 TArray 的地址），也就是: 10x1FCCD0BB738 - 0x8 = 0x1FCCD0BB730   地址 0x1FCCD0BB730 的数据 0x1FCCD742B80 就是 ActorArray 的地址（其实是 TArray 中指针指向的地址）。 而 ActorArray 里也是地址，这些地址是 Actor 的地址，所以我们拷贝几个 Actor 的地址去结构分析。  随便选3个 Actor 地址去结构分析，结构分析弹窗里使用快捷键（Ctrl+A）添加额外的地址框。 分析出结果后，从 0x100 以后的偏移开始找，因为 UE4...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2021/06/21/ue4/UE4%E5%BC%95%E6%93%8E%E6%B8%B8%E6%88%8F%E7%BB%93%E6%9E%84%E5%92%8C%E4%B8%80%E4%BA%9B%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/UE4%E5%BC%95%E6%93%8E%E6%B8%B8%E6%88%8F%E7%BB%93%E6%9E%84%E5%92%8C%E4%B8%80%E4%BA%9B%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" title="UE4引擎游戏结构和一些基础概念"><img class="cover" src="/usr/uploads/2021/06/482392516.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-21</div><div class="info-item-2">UE4引擎游戏结构和一些基础概念</div></div><div class="info-2"><div class="info-item-1">UE4游戏结构概览小龙讲师总结的结构: 常用结构概念UWorld 单例对象，逆向UE4游戏的重要入口 可获取UGameInstance和ULevel  UGameInstanceUWorld类的属性: 1struct UGameInstance* OwningGameInstance;  ULocalPlayerUGameInstance类的属性: 1struct TArray&lt;struct ULocalPlayer*&gt; LocalPlayers; 数组的第一个元素即为当前角色的ULocalPlayer。 APlayerControllerULocalPlayer父类(UPlayer)的属性: 1struct APlayerController* PlayerController; 包含APawn、APlayerCameraManager等重要数据。 APawn 继承自AActor 在UE4逆向中称为InPawn 位于AController类:  1struct APawn*...</div></div></div></a><a class="pagination-related" href="/2021/06/21/ue4/UE4%E6%89%BEActor%E5%8C%BA%E5%88%86%E6%A0%87%E8%AF%86/UE4%E6%89%BEActor%E5%8C%BA%E5%88%86%E6%A0%87%E8%AF%86/" title="UE4找Actor区分标识"><img class="cover" src="/usr/uploads/2021/06/1057996391.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-21</div><div class="info-item-2">UE4找Actor区分标识</div></div><div class="info-2"><div class="info-item-1">UE4找Actor区分标识标识的作用我们如何区分 ActorArray 中的 Actor 是敌人、队友、自己、物品还是其他东西？比较通用的做法是对比多个 Actor 的结构，找出不同类型的 Actor 在同一偏移，数值的异同规律。 比如在 Actor 下 0x555 偏移，类型为 4 Bytes，是敌人的时候这个数值为0，是队友的时候数值为1，是自己的时候数值为2，不是人的时候数值为3。这样就可以区分出人和其他物品，并且可以区分出人里面的敌人、队友和自己。这就是找标识的作用。 由于我测试的游戏是一个单机游戏，相对来说是比较容易对比 Actor 结构中的数据。 找出区分的标识先遍历 ActorArray 并绘制所有 Actor 的地址，然后观察绘制出来的地址。发现自己身上有多个地址，这是因为身上的装备也是 Actor。 我发现在人物播放闲置动画或下蹲的时候，不会移动的是人物的地址，会移动的是物品的地址。（只是刚好这个游戏是这样的）   还有一种区分方式是把自己身上的所有地址都添加到 CE 地址列表，然后挨个浏览内存区域，类型改为 float，将附近的 1.0...</div></div></div></a><a class="pagination-related" href="/2021/06/21/ue4/UE4%E6%89%BEComponentToWorld%E5%92%8C%E9%AA%A8%E9%AA%BC%E6%95%B0%E7%BB%84/UE4%E6%89%BEComponentToWorld%E5%92%8C%E9%AA%A8%E9%AA%BC%E6%95%B0%E7%BB%84/" title="UE4找ComponentToWorld和骨骼数组"><img class="cover" src="/usr/uploads/2021/06/1089640715.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-21</div><div class="info-item-2">UE4找ComponentToWorld和骨骼数组</div></div><div class="info-2"><div class="info-item-1">为什么要找骨骼基址？找骨骼基址是为了实现绘制骨架和骨骼自瞄，比如瞄准头部骨骼、胸部骨骼。 找骨骼基址对自己的 Actor 的地址进行结构分析，防止分析错地址最好直接用 APawn，然后根据特征去查找。 ComponentToWorld 是 3x3 结构，最后一行数值不会动，最后一行数值一般是3个固定的数值和 0.00。例如：  1.00 1.00 1.00 0.00  2.50 2.50 2.50 0.00  ComponentToWorld位置根据特征，我们找到了 ComponentToWorld，得到偏移为:Actor.base -&gt; 0x378 -&gt; 0x180，其中 0x378 偏移是 Mesh 的偏移。  骨骼数组位置ComponentToWorld 和骨骼数组都在 Mesh 下面。找到 ComponentToWorld 后，很容易找到骨骼数组。骨骼数组在内存中表现很规律，偏移为:Actor.base -&gt; 0x378 -&gt;...</div></div></div></a><a class="pagination-related" href="/2021/06/21/ue4/UE4%E6%89%BE%E5%AD%90%E5%BC%B9%E5%92%8C%E5%90%8E%E5%9D%90%E5%8A%9B%E5%9F%BA%E5%9D%80/UE4%E6%89%BE%E5%AD%90%E5%BC%B9%E5%92%8C%E5%90%8E%E5%9D%90%E5%8A%9B%E5%9F%BA%E5%9D%80/" title="UE4找子弹和后坐力基址"><img class="cover" src="/usr/uploads/2021/06/588919298.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-21</div><div class="info-item-2">UE4找子弹和后坐力基址</div></div><div class="info-2"><div class="info-item-1">UE4子弹常识子弹在游戏中一般都会给出 UI 显示，我们可以根据子弹变化，很容易精确搜索到子弹的地址。而子弹的射速、后坐力等数据，基本都是在子弹内存区域前后范围内的。 找子弹基址多次精确搜索子弹数量，找到子弹数量的地址：  对这个地址进行指针扫描，扫描层级5。扫描出结果后，记住之前子弹的枪，然后重新上游戏。CE重新附加进程，切换到之前的枪并改变子弹数量后，在指针扫描器里重新扫描内存，输入现在子弹的数量，过滤掉失效地址。重复操作多次，就可以慢慢定位到基址。 扫描结果就算多次过滤后，一般也会剩下很多，我们找偏移中带 0x0 0x8 0x10 这样8字节的倍数的偏移量，这种偏移是指针数值的单个元素大小，指针数值的偏移基本的都是这样的。比如下面这个偏移 0x0 0x8 0x10，发现刚好对应我们3把枪的子弹数量。  找后坐力基址查看子弹的内存区域，观察有什么数值是开枪的过程中有变化的。  把这些数值都列为可疑数值加到地址列表，然后锁定数值为0，测试开枪有没有后坐力。 注意要把 CE...</div></div></div></a><a class="pagination-related" href="/2021/06/21/ue4/UE4%E6%89%BE%E6%89%80%E6%9C%89%E7%8E%A9%E5%AE%B6%E7%9A%84%E8%A1%80%E9%87%8F/UE4%E6%89%BE%E6%89%80%E6%9C%89%E7%8E%A9%E5%AE%B6%E7%9A%84%E8%A1%80%E9%87%8F/" title="UE4找所有玩家的血量"><img class="cover" src="/usr/uploads/2021/06/3665838702.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-21</div><div class="info-item-2">UE4找所有玩家的血量</div></div><div class="info-2"><div class="info-item-1">为什么要找所有玩家的血量？用于绘制所有玩家的血条，判断玩家是否死亡。 传统找法一般 FPS 射击游戏中的血量满血时都是数值100类型 float。所以我们满血的时候先精确扫描单浮点100，然后掉血了搜减少的数值。没掉血再搜不变的数值，直到找到血量地址。 找到后指针扫描最大5级偏移。扫描出结果后，要找基址是 &quot;BattleRoyaleTrainer-Win64-Shipping.exe&quot;+02AEFFB8 ，并且偏移是 0x30 -&gt; 0xB0 后。因为我们要找的是所有玩家的血量，也就是 Actor 下的血量。 最终得到血量偏移为 &quot;BattleRoyaleTrainer-Win64-Shipping.exe&quot;+02AEFFB8 -&gt; 0x30 -&gt; 0xB0 -&gt; 0x8 -&gt; 0x7C4。其中 0x8 为遍历 ActorArray...</div></div></div></a><a class="pagination-related" href="/2021/06/21/ue4/UE4%E6%89%BE%E6%91%84%E5%83%8F%E6%9C%BA%E7%9F%A9%E9%98%B5/UE4%E6%89%BE%E6%91%84%E5%83%8F%E6%9C%BA%E7%9F%A9%E9%98%B5/" title="UE4找摄像机矩阵"><img class="cover" src="/usr/uploads/2021/06/733412634.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-21</div><div class="info-item-2">UE4找摄像机矩阵</div></div><div class="info-2"><div class="info-item-1">为什么需要摄像机矩阵？我们可以用屏幕尺寸 + Actor 三维坐标 + 摄像机矩阵，通过固定算法计算出 Actor 的屏幕坐标，从而实现绘制 Actor 的数据，实现透视效果。 常规方式 先扫未知的初始值，类型单浮点 移动镜头并搜索变动的数值，再移动再搜索，反复操作 不移动镜头，搜索不变的数值，反复操作 最后搜索结果数量不再减少时： 将结果列表里当前值带 E 的和绿色的静态地址删掉 依次选择地址浏览相关内存区域，数据类型切为单浮点 转动镜头，根据摄像机居中特征分析是否是矩阵数据    最终找到矩阵如下： 摄像机矩阵的特征 UE4 摄像机矩阵的第三列是 0.00 0.00 0.00 x.00，最后一个数值不固定，前面3个 0.00 固定 除了第四行中会出现较大的数值，前面三行都不会出现较大数值 一般不移动镜头时，摄像机矩阵数值不会变化 UE4 的摄像机矩阵的动态地址一般重启游戏才会变化，切换场景和房间一般不会变化  特征码方式UE4 还可以使用摄像机矩阵的特征码快速定位，通用矩阵特征码： 100 00 00 00 00 00 00 00 00 00 80 3F 00 00 80...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Logo.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">admin</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">72</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">一个前端程序员，爱折腾，爱技术分享</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFCount%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">什么是Count？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E4%BB%AC%E6%89%BECount%E6%9D%A5%E5%B9%B2%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">我们找Count来干什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%9C%E7%B4%A2Count%E7%9A%84%E5%8A%A8%E6%80%81%E5%9C%B0%E5%9D%80"><span class="toc-number">3.</span> <span class="toc-text">搜索Count的动态地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%BE%E5%88%B0Count%E5%9F%BA%E5%9D%80"><span class="toc-number">4.</span> <span class="toc-text">找到Count基址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E5%9F%BA%E5%9D%80%E6%95%B0%E6%8D%AE"><span class="toc-number">5.</span> <span class="toc-text">最终基址数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%94%E7%BD%91%E6%B8%B8%E6%88%8F%E7%9A%84%E7%89%B9%E6%AE%8A%E6%83%85%E5%86%B5"><span class="toc-number">6.</span> <span class="toc-text">联网游戏的特殊情况</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/10/%E5%AE%89%E5%8D%93/%E5%88%A9%E7%94%A8github-Action%E7%BC%96%E8%AF%91%E5%AE%89%E5%8D%93%E5%86%85%E6%A0%B8%E9%A9%B1%E5%8A%A8/" title="利用github Action编译安卓内核驱动">利用github Action编译安卓内核驱动</a><time datetime="2024-11-10T04:58:06.000Z" title="发表于 2024-11-10 04:58:06">2024-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/10/vue/%E8%A7%A3%E5%86%B3safari%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8window-open%E5%A4%B1%E6%95%88%E7%9A%84%E9%97%AE%E9%A2%98/" title="解决safari浏览器使用window.open失效的问题">解决safari浏览器使用window.open失效的问题</a><time datetime="2023-07-10T04:58:06.000Z" title="发表于 2023-07-10 04:58:06">2023-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/02/02/Cloudflare%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89Docker%E9%95%9C%E5%83%8F%E6%BA%90/" title="Cloudflare搭建私有Docker镜像源">Cloudflare搭建私有Docker镜像源</a><time datetime="2023-02-02T04:58:06.000Z" title="发表于 2023-02-02 04:58:06">2023-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/06/20/docker%E8%AE%B0%E5%BD%95/" title="Docker记录">Docker记录</a><time datetime="2022-06-20T04:58:06.000Z" title="发表于 2022-06-20 04:58:06">2022-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/02/07/vue/vue3%E5%85%B6%E4%BB%96/" title="vue3其他">vue3其他</a><time datetime="2022-02-07T04:58:06.000Z" title="发表于 2022-02-07 04:58:06">2022-02-07</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2025 By admin</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.p0.ee',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/live2d-widget/autoload.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="255,255,255" opacity="1" zIndex="-1" count="99" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script></div></body></html>
